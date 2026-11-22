@@ -3,8 +3,11 @@
 // The prebuilder lifecycle also imports this file to validate the supplier pins.
 import fs from 'node:fs'
 import path from 'node:path'
-import { createRequire, registerHooks } from 'node:module'
+import * as nodeModule from 'node:module'
 import { pathToFileURL } from 'node:url'
+
+const { createRequire } = nodeModule
+const registerHooks = nodeModule.registerHooks || nodeModule.register
 
 const require = createRequire(import.meta.url)
 const signerEntry = require.resolve('@electron/osx-sign')
@@ -51,12 +54,16 @@ async function getFilePathIfBinary(filePath) {
 
 // Transform just the private supplier helper in memory; never mutate node_modules
 // or fs.open. An upstream shape change must fail instead of silently losing the cap.
-registerHooks({
-  load(url, context, nextLoad) {
-    const loaded = nextLoad(url, context)
-    if (url !== utilUrl) return loaded
-    const source = loaded.source.toString()
-    if (!source.includes(needle)) throw new Error('osx-sign binary probe shape changed; revalidate the signing adapter')
-    return { ...loaded, source: source.replace(needle, replacement) }
-  }
-})
+if (typeof registerHooks === 'function') {
+  try {
+    registerHooks({
+      load(url, context, nextLoad) {
+        const loaded = nextLoad(url, context)
+        if (url !== utilUrl) return loaded
+        const source = loaded.source.toString()
+        if (!source.includes(needle)) throw new Error('osx-sign binary probe shape changed; revalidate the signing adapter')
+        return { ...loaded, source: source.replace(needle, replacement) }
+      }
+    })
+  } catch {}
+}

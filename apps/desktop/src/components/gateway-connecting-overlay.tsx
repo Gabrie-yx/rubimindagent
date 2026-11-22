@@ -16,7 +16,7 @@ import { isMainWindow } from '@/store/windows'
 
 // Decode mechanics live in the shared <DecodeText> primitive
 // (components/ui/decode-text.tsx). "CONN" stays legible via prefix={4}.
-const TEXT = 'CONNECTING'
+const TEXT = 'RUBIMIND'
 
 // Exit choreography (ms): text fades down + out, hold, then the overlay fades.
 const TEXT_OUT_MS = 360
@@ -97,17 +97,15 @@ function ConnectingOverlayView({ decoding, onExit, phase }: ConnectingOverlayVie
       {onExit ? (
         <SlowSetupStart onExit={onExit} />
       ) : (
-        <DecodeText
-          active={decoding}
-          className={cn(
-            'pl-[0.4em] text-(--theme-primary) transition duration-300 ease-out',
-            leaving ? 'translate-y-2 opacity-0 saturate-0' : 'translate-y-0 opacity-100 saturate-100'
-          )}
-          cursor
-          loop
-          prefix={4}
-          text={TEXT}
-        />
+        <div className="flex flex-col items-center justify-center gap-4">
+          <div className="relative flex items-center justify-center">
+            <div className="absolute h-16 w-16 animate-ping rounded-full bg-red-600/30 duration-1000" />
+            <div className="absolute h-24 w-24 animate-pulse rounded-full bg-red-600/15" />
+            <span className="relative text-3xl font-bold tracking-[0.35em] text-red-600 drop-shadow-[0_0_12px_rgba(220,38,38,0.7)] animate-pulse">
+              {TEXT}
+            </span>
+          </div>
+        </div>
       )}
     </div>
   )

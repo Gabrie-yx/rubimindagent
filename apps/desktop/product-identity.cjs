@@ -9,16 +9,16 @@
 'use strict'
 
 const variants = {
-  '': { display: 'Hermes', kebab: 'hermes', pascal: 'Hermes' },
+  '': { display: 'RUBIMIND', kebab: 'hermes', pascal: 'RUBIMIND' },
   light: {
-    display: 'Hermes Light',
+    display: 'RUBIMIND Light',
     kebab: 'hermes-light',
-    pascal: 'HermesLight'
+    pascal: 'RUBIMINDLight'
   },
   bundled: {
-    display: 'Hermes Agent',
+    display: 'RUBIMIND Agent',
     kebab: 'hermes-bundled',
-    pascal: 'HermesBundled'
+    pascal: 'RUBIMINDBundled'
   }
 }
 
@@ -91,7 +91,10 @@ const identity = {
     : {})
 }
 
-const { channelBuildRequest } = require('../../scripts/msix-shared.mjs')
+let channelBuildRequest = () => null
+try {
+  ({ channelBuildRequest } = require('../../scripts/msix-shared.mjs'))
+} catch {}
 const request = channelBuildRequest()
 
 // A channel created with --branding stable copies stable's identity, so it IS
