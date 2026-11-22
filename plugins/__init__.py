@@ -1,0 +1,1 @@
+# RUBIMIND plugins package
