@@ -1,4 +1,4 @@
-import { contrastRatio, ensureContrast, mix, parseColor, relativeLuminance, toHex } from '@hermes/shared/color'
+﻿import { contrastRatio, ensureContrast, mix, parseColor, relativeLuminance, toHex } from '@hermes/shared/color'
 import type { SkinBranding, SkinColors } from '@hermes/shared/skin'
 
 import { desaturate, grayOf, liftForContrast } from './lib/color.js'
@@ -252,7 +252,7 @@ export function themeToneHex(tone: string): string {
 // ── Defaults ─────────────────────────────────────────────────────────
 
 const BRAND: ThemeBrand = {
-  name: 'Hermes Agent',
+  name: 'RUBIMIND Agent',
   icon: '☤',
   prompt: '❯',
   welcome: 'Type your message or /help for commands.',
@@ -969,3 +969,4 @@ export function fromSkin(
     isLight
   )
 }
+

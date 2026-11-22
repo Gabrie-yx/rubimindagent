@@ -1,4 +1,4 @@
-// health: allow FILE_LINES -- locale data: translated copy for the usage-window plan UI (allowance gauges, Large/Free tags, the limit card), one key per string
+﻿// health: allow FILE_LINES -- locale data: translated copy for the usage-window plan UI (allowance gauges, Large/Free tags, the limit card), one key per string
 import { FIELD_DESCRIPTIONS, FIELD_LABELS } from '@/app/settings/constants'
 
 import { enAppTour } from './en_app_tour'
@@ -1807,7 +1807,7 @@ export const en: Translations = {
         cliBillingDisabled: {
           title: 'Remote spending is off',
           message:
-            "Remote spending is off for this account — a billing admin can turn it on from the portal's Hermes Agent page."
+            "Remote spending is off for this account — a billing admin can turn it on from the portal's RUBIMIND Agent page."
         },
         roleRequired: {
           title: 'Admin role required',
@@ -3467,7 +3467,7 @@ export const en: Translations = {
       '/subscription': 'View your Nous plan and change it in the browser',
       '/topup': 'Show your Nous balance and manage billing on the portal',
       '/platform': 'Pause, resume, or list a failing gateway platform',
-      '/version': 'Show Hermes Agent version',
+      '/version': 'Show RUBIMIND Agent version',
       '/debug': 'Debug report (versions, config keys, error counts; no log text): shows the privacy notice; /debug upload shares links',
       '/model': 'Switch the model for this session'
     },
@@ -3937,7 +3937,7 @@ export const en: Translations = {
     applyRemote: 'Apply and reconnect',
     backToSetup: 'Back',
     failedTitle: 'Installation failed',
-    settingUpTitle: 'Setting up Hermes Agent',
+    settingUpTitle: 'Setting up RUBIMIND Agent',
     finishingTitle: 'Finishing up',
     failedDesc:
       'One of the setup steps did not finish. This can happen when another copy of Hermes is running, the internet connection dropped, or antivirus blocked the installer. Close other Hermes windows, then choose Reload and retry. If it fails again, open the logs and send them to support.',
@@ -4951,3 +4951,4 @@ export const en: Translations = {
     }
   }
 }
+

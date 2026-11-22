@@ -1,17 +1,17 @@
-// Chat bits: the banner/session panel (branding.tsx), the reasoning + tool
+﻿// Chat bits: the banner/session panel (branding.tsx), the reasoning + tool
 // trail tree (thinking.tsx), transcript rows (messageLine.tsx), the todo
 // panel, the queued-messages strip, and the human-facing bootstrap messages
 // in entry.tsx. Owned namespace: `chatBits`.
 //
 // loaders.tsx and banner.ts carry no prose (glyph runs + brand art only), so
-// they have no leaves here. Brand names ("Hermes", "Nous Research"), slash
+// they have no leaves here. Brand names ("Hermes", "Gabriel Almeida"), slash
 // command names and hotkey chords stay as-is inside the sentences that carry
 // them; the sentence itself is the translatable unit.
 
 export const chatBitsEn = {
   chatBits: {
     branding: {
-      tagFull: 'Nous Research · Messenger of the Digital Gods',
+      tagFull: 'Gabriel Almeida · Messenger of the Digital Gods',
       tagMid: 'Messenger of the Digital Gods',
       scanningSkills: 'scanning skills',
       moreCategories: (count: number) => `(and ${count} more categories…)`,
@@ -102,3 +102,4 @@ export const chatBitsEn = {
     }
   }
 }
+

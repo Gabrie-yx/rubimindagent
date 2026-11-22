@@ -1,4 +1,4 @@
-"""Classic-CLI rendering helpers: reasoning-tag stripping, ANSI/skin colours, light-mode detection, markdown/final-content rendering, output-history replay, ``_cprint`` and the panel box/wrap helpers.
+﻿"""Classic-CLI rendering helpers: reasoning-tag stripping, ANSI/skin colours, light-mode detection, markdown/final-content rendering, output-history replay, ``_cprint`` and the panel box/wrap helpers.
 
 Split out of ``cli.py``; ``cli`` re-exports every public name and moved bodies late-bind
 cli-level names through ``from cli import ...`` at call time so facade monkeypatch seams hold.
@@ -934,7 +934,7 @@ def _build_compact_banner() -> str:
     if (getattr(_skin, "name", "default") if _skin else "default") == "default":
         tiny_line = "☤ NOUS HERMES"
     else:
-        tiny_line = _skin.get_branding("agent_name", "Hermes Agent") if _skin else "Hermes Agent"
+        tiny_line = _skin.get_branding("agent_name", "RUBIMIND Agent") if _skin else "RUBIMIND Agent"
     line1 = t("cli.render.banner_tagline", name=tiny_line)
 
     if os.environ.get("HERMES_FAST_STARTUP_BANNER") == "1":
@@ -947,7 +947,7 @@ def _build_compact_banner() -> str:
 
     w = min(shutil.get_terminal_size().columns - 2, 88)
     if w < 30:
-        return f"\n[{title_color}]{tiny_line}[/] [dim {dim_color}]- Nous Research[/]\n"
+        return f"\n[{title_color}]{tiny_line}[/] [dim {dim_color}]- Gabriel Almeida[/]\n"
 
     inner = w - 2  # inside the box border
     bar = "═" * w
@@ -1048,3 +1048,4 @@ def _append_panel_line(lines, border_style: str, content_style: str, text: str, 
 
 def _append_blank_panel_line(lines, border_style: str, box_width: int) -> None:
     lines.append((border_style, "│" + (" " * box_width) + "│\n"))
+

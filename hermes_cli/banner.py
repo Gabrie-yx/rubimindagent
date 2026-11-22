@@ -1,4 +1,4 @@
-"""Welcome banner, ASCII art, skills summary, and update check for the CLI."""
+﻿"""Welcome banner, ASCII art, skills summary, and update check for the CLI."""
 import json
 import logging
 import os
@@ -71,12 +71,12 @@ def _skin_color(key: str, fallback: str) -> str:
 from hermes_cli import __release_date__ as RELEASE_DATE
 from hermes_cli.version_info import get_version_info
 
-HERMES_AGENT_LOGO = """[bold #FFD700]██╗  ██╗███████╗██████╗ ███╗   ███╗███████╗███████╗       █████╗  ██████╗ ███████╗███╗   ██╗████████╗[/]
-[bold #FFD700]██║  ██║██╔════╝██╔══██╗████╗ ████║██╔════╝██╔════╝      ██╔══██╗██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝[/]
-[#FFBF00]███████║█████╗  ██████╔╝██╔████╔██║█████╗  ███████╗█████╗███████║██║  ███╗█████╗  ██╔██╗ ██║   ██║[/]
-[#FFBF00]██╔══██║██╔══╝  ██╔══██╗██║╚██╔╝██║██╔══╝  ╚════██║╚════╝██╔══██║██║   ██║██╔══╝  ██║╚██╗██║   ██║[/]
-[#CD7F32]██║  ██║███████╗██║  ██║██║ ╚═╝ ██║███████╗███████║      ██║  ██║╚██████╔╝███████╗██║ ╚████║   ██║[/]
-[#CD7F32]╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝      ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝[/]"""
+HERMES_AGENT_LOGO = """[bold #DC2626]██████╗ ██╗   ██╗██████╗ ██╗███╗   ███╗██╗███╗   ██╗██████╗ [/]
+[bold #DC2626]██╔══██╗██║   ██║██╔══██╗██║████╗ ████║██║████╗  ██║██╔══██╗[/]
+[#EF4444]██████╔╝██║   ██║██████╔╝██║██╔████╔██║██║██╔██╗ ██║██║  ██║[/]
+[#EF4444]██╔══██╗██║   ██║██╔══██╗██║██║╚██╔╝██║██║██║╚██╗██║██║  ██║[/]
+[#B91C1C]██║  ██║╚██████╔╝██████╔╝██║██║ ╚═╝ ██║██║██║ ╚████║██████╔╝[/]
+[#B91C1C]╚═╝  ╚═╝ ╚═════╝ ╚═════╝ ╚═╝╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═════╝ [/]"""
 
 HERMES_CADUCEUS = """[#CD7F32]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⡀⠀⣀⣀⠀⢀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[/]
 [#CD7F32]⠀⠀⠀⠀⠀⠀⢀⣠⣴⣾⣿⣿⣇⠸⣿⣿⠇⣸⣿⣿⣷⣦⣄⡀⠀⠀⠀⠀⠀⠀[/]
@@ -211,7 +211,7 @@ def format_banner_version_label() -> str:
 
     stamp = read_install_stamp(get_project_root())
     if stamp.get("distribution") == "desktop-app":
-        label = f"Hermes Agent v{get_version_info().derived_version}"
+        label = f"RUBIMIND Agent v{get_version_info().derived_version}"
         if stamp.get("source") == "commit-build":
             return f"{label} · commit-build · {str(stamp.get('commit') or '')[:12]}"
         if stamp.get("tag"):
@@ -224,7 +224,7 @@ def format_banner_version_label() -> str:
             return f"{label} · installer"
         return label
 
-    base = f"Hermes Agent v{get_version_info().derived_version} ({RELEASE_DATE})"
+    base = f"RUBIMIND Agent v{get_version_info().derived_version} ({RELEASE_DATE})"
     from hermes_cli.config import load_config
     from hermes_cli.update_channel import resolve_update_channel
 
@@ -608,7 +608,7 @@ def _banner_left_lines(model: str, cwd: str, session_id, context_length, provide
     marker = context_marker or ("pinned" if context_pinned else "")
     pin = f" ({marker})" if marker else ""
     ctx_str = _dim_sep(f"{_format_context_length(context_length)} context{pin}") if context_length else ""
-    nous_str = _dim_sep("Nous Research")
+    nous_str = _dim_sep("Gabriel Almeida")
     if (provider or "").strip().lower() == "moa":
         # MoA virtual provider: ``model`` is a preset name; show it with its aggregator.
         agg_label = _quiet(lambda: _moa_aggregator_label(model), "")
@@ -765,3 +765,4 @@ def build_welcome_banner(
         console.print(getattr(_bskin, "banner_logo", None) or HERMES_AGENT_LOGO)
         console.print()
     console.print(outer_panel)
+

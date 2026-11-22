@@ -1,4 +1,4 @@
-import { enDesktopCommands } from './en_desktop_commands'
+﻿import { enDesktopCommands } from './en_desktop_commands'
 import { enSessionCommands } from './en_session_commands'
 import type { Translations } from './types'
 
@@ -11,7 +11,7 @@ export const enNotices = {
   butterbar: {
     goTo: (index, total) => `Show notice ${index} of ${total}`,
     legal: {
-      before: 'Use of Hermes Agent is subject to our ',
+      before: 'Use of RUBIMIND Agent is subject to our ',
       terms: 'Terms of Service',
       between: ' and ',
       privacy: 'Privacy Policy',
@@ -46,3 +46,4 @@ export const enNotices = {
   Translations,
   'remoteDisplayBanner' | 'butterbar' | 'promptNotices' | 'keepAwakeOffer' | 'connectorOffer'
 >
+
