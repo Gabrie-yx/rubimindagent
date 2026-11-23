@@ -51,7 +51,16 @@ export function FeaturedProviderRow({
           <span className="text-[length:var(--conversation-text-font-size)] font-semibold">
             {isRubimind ? 'RUBIMIND AI' : (freeTier ? t.freeTier.providerRowTitle : providerTitle(provider))}
           </span>
-          {freeTier ? (
+          {isRubimind ? (
+            loggedIn ? (
+              <ConnectedTag />
+            ) : (
+              <span className="inline-flex items-center gap-1.5 bg-primary px-2 py-0.5 text-[0.64rem] font-semibold uppercase tracking-[0.16em] text-primary-foreground">
+                <span aria-hidden="true" className="dither inline-block size-2 shrink-0" />
+                {t.onboarding.recommended}
+              </span>
+            )
+          ) : freeTier ? (
             <FreeTierTag />
           ) : loggedIn ? (
             <ConnectedTag />
@@ -64,7 +73,7 @@ export function FeaturedProviderRow({
         </div>
         <p className="mt-1 text-xs leading-5 text-muted-foreground">
           {isRubimind
-            ? t.freeTier.providerRowPitch
+            ? (loggedIn ? (t.onboarding.connected ? `${t.onboarding.connected} — API RUBIMIND (rubimind-0.2-omni)` : 'Conectado à API RUBIMIND (rubimind-0.2-omni)') : t.freeTier.providerRowPitch)
             : (freeTier ? t.freeTier.providerRowPitch : t.onboarding.featuredPitch)}
         </p>
       </div>

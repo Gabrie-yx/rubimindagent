@@ -596,7 +596,7 @@ export const FEATURED_ID = 'rubimind'
 
 // Stand-in for the RUBIMIND row when the OAuth provider list could not be read
 // (it failed or came back empty, which drops the picker onto the key form).
-const RUBIMIND_FALLBACK: OAuthProvider = {
+export const RUBIMIND_FALLBACK: OAuthProvider = {
   cli_command: 'rubimind model',
   docs_url: 'https://rubimindia.vercel.app',
   flow: 'external',

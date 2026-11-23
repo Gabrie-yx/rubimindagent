@@ -11,6 +11,7 @@ import {
   OpenRouterProviderRow,
   ProviderRow,
   providerTitle,
+  RUBIMIND_FALLBACK,
   sortProviders
 } from '@/components/onboarding'
 import { Button } from '@/components/ui/button'
@@ -186,16 +187,13 @@ function OAuthPicker({
     }
   }
 
-  // The free tier holds a token but no account: it is never "connected"; the featured Nous row
-  // names it (Nous · free tier) and offers the sign-in that keeps its connectors.
+  // The featured provider is always RUBIMIND AI (featured row at top).
+  // Other providers (excluding nous free tier) are placed under collapsible others.
   const isConnected = (p: OAuthProvider) => Boolean(p.status?.logged_in) && p.status?.free_tier !== true
-  const featured = ordered.find(p => p.id === FEATURED_ID && !isConnected(p)) ?? null
+  const featured = ordered.find(p => p.id === FEATURED_ID) ?? RUBIMIND_FALLBACK
   const rest = featured ? ordered.filter(p => p.id !== FEATURED_ID) : ordered
-  // Keep connected accounts grouped and always visible; only the unconnected
-  // providers hide behind the disclosure, so the page leads with what's set up.
-  // Both lists preserve `sortProviders` order (curated priority, then name).
   const connected = rest.filter(isConnected)
-  const others = rest.filter(p => !isConnected(p))
+  const others = rest.filter(p => !isConnected(p) && p.id !== 'nous')
   const collapsible = others.length > 0
   const showOthers = !collapsible || showAll
 

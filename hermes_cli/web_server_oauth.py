@@ -135,10 +135,8 @@ def _external_process_cli_command(provider_id: str, default: str) -> str:
 # ``flow``: ``device_code`` = show code + URL + poll; ``external`` = delegated to a terminal/CLI.
 _OAUTH_PROVIDER_CATALOG: tuple[dict[str, Any], ...] = (
     # status_fn None → dispatched via auth.get_<provider>_auth_status.
-    {"id": "rubimind", "name": "RUBIMIND", "flow": "external", "cli_command": "rubimind model",
+    {"id": "rubimind", "name": "RUBIMIND AI", "flow": "external", "cli_command": "rubimind model",
      "docs_url": "https://rubimindia.vercel.app", "status_fn": None},
-    {"id": "nous", "name": "Nous Portal", "flow": "device_code", "cli_command": "hermes auth add nous",
-     "docs_url": "https://portal.nousresearch.com", "status_fn": None},
     {"id": "openai-codex", "name": "ChatGPT or Codex Subscription", "flow": "device_code",
      "cli_command": "hermes auth add openai-codex", "docs_url": "https://platform.openai.com/docs",
      "status_fn": None},
