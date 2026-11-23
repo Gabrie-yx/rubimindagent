@@ -8,6 +8,7 @@ import type { OAuthProvider } from '@/types/hermes'
 // only the featured order. Both Anthropic entries sit at the bottom: the API-key
 // path first, then the subscription OAuth path (only works with extra usage credits).
 const PROVIDER_ORDER: Record<string, number> = {
+  rubimind: -1,
   nous: 0,
   'openai-codex': 1,
   'minimax-oauth': 2,
@@ -33,8 +34,9 @@ export function FeaturedProviderRow({
   provider: OAuthProvider
 }) {
   const { t } = useI18n()
-  const freeTier = provider.status?.free_tier === true
-  const loggedIn = provider.status?.logged_in && !freeTier
+  const isRubimind = provider.id === 'rubimind'
+  const freeTier = !isRubimind && provider.status?.free_tier === true
+  const loggedIn = Boolean(provider.status?.logged_in) && !freeTier
 
   return (
     <button
@@ -45,9 +47,9 @@ export function FeaturedProviderRow({
       <span aria-hidden className="arc-border arc-reverse arc-nous" />
       <div className="min-w-0">
         <div className="flex items-center gap-2">
-          <img alt="" className="size-5 shrink-0 rounded" src={assetPath('apple-touch-icon.png')} />
+          <img alt="RUBIMIND" className="size-5 shrink-0 rounded object-contain" src={assetPath('rubimind.png')} />
           <span className="text-[length:var(--conversation-text-font-size)] font-semibold">
-            {freeTier ? t.freeTier.providerRowTitle : providerTitle(provider)}
+            {isRubimind ? 'RUBIMIND AI' : (freeTier ? t.freeTier.providerRowTitle : providerTitle(provider))}
           </span>
           {freeTier ? (
             <FreeTierTag />
@@ -61,7 +63,9 @@ export function FeaturedProviderRow({
           )}
         </div>
         <p className="mt-1 text-xs leading-5 text-muted-foreground">
-          {freeTier ? t.freeTier.providerRowPitch : t.onboarding.featuredPitch}
+          {isRubimind
+            ? t.freeTier.providerRowPitch
+            : (freeTier ? t.freeTier.providerRowPitch : t.onboarding.featuredPitch)}
         </p>
       </div>
       <ChevronRight className="size-4 shrink-0 text-primary transition group-hover:translate-x-0.5" />

@@ -110,6 +110,8 @@ export interface DesktopOnboardingState {
    *  custom endpoint"). Forces the API-key form with the local option
    *  preselected instead of the OAuth picker. */
   localEndpoint: boolean
+  /** Optional preselected env key when opening the API key form. */
+  initialEnvKey?: string
   /** True when the backend still owes this user the one-time free-tier
    *  introduction AND the free tier is what carries inference. It makes the
    *  overlay show its "Hermes is ready" screen once even though the app is
@@ -746,6 +748,27 @@ export function startManualLocalEndpoint(reason: null | string = null, profile?:
     requested: true,
     localEndpoint: true,
     mode: 'apikey',
+    reason: reason ? reason.trim() || DEFAULT_ONBOARDING_REASON : null,
+    flow: { status: 'idle' }
+  })
+}
+
+export function startManualApiKey(
+  initialEnvKey: string = 'RUBIMIND_API_KEY',
+  reason: null | string = null,
+  profile?: ProfileScope
+) {
+  cancelOnboardingFlow()
+  pendingProviderOAuthId = null
+  patch({
+    manual: true,
+    targetScope: captureOnboardingScope(profile),
+    providers: null,
+    requested: true,
+    localEndpoint: false,
+    mode: 'apikey',
+    initialEnvKey,
+    freeTierReady: false,
     reason: reason ? reason.trim() || DEFAULT_ONBOARDING_REASON : null,
     flow: { status: 'idle' }
   })

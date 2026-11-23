@@ -3963,8 +3963,8 @@ export const en: Translations = {
   onboarding: enOnboarding,
 
   freeTier: {
-    providerRowTitle: 'Nous · free tier',
-    providerRowPitch: 'Sign in with a Nous account to unlock more models and tools.',
+    providerRowTitle: 'RUBIMIND AI',
+    providerRowPitch: 'Connect your RUBIMIND API key (RBM-API-...) to unlock native Omni and Core models.',
     readyTitle: 'RUBIMIND is ready.',
     readyCaption: 'Free · connectors included',
     begin: 'Begin',

@@ -86,6 +86,14 @@ export interface ApiKeyOption {
 // Nous Portal OAuth), ahead of OpenRouter and the rest of the key catalog.
 const API_KEY_OPTIONS: ApiKeyOption[] = [
   {
+    id: 'rubimind',
+    name: 'RUBIMIND',
+    envKey: 'RUBIMIND_API_KEY',
+    docsUrl: 'https://rubimindia.vercel.app/',
+    description: 'Chave de API do RUBIMIND (RBM-API-...) para acesso aos modelos Omni e Core.',
+    placeholder: 'RBM-API-...'
+  },
+  {
     id: 'fireworks',
     name: 'Fireworks AI',
     envKey: 'FIREWORKS_API_KEY',
@@ -584,17 +592,16 @@ function Header() {
   )
 }
 
-export const FEATURED_ID = 'nous'
+export const FEATURED_ID = 'rubimind'
 
-// Stand-in for the Nous row when the OAuth provider list could not be read
+// Stand-in for the RUBIMIND row when the OAuth provider list could not be read
 // (it failed or came back empty, which drops the picker onto the key form).
-// Starting sign-in only needs the id; the backend's start reply decides the flow.
-const NOUS_FALLBACK: OAuthProvider = {
-  cli_command: 'hermes auth add nous',
-  docs_url: 'https://portal.nousresearch.com',
-  flow: 'device_code',
+const RUBIMIND_FALLBACK: OAuthProvider = {
+  cli_command: 'rubimind model',
+  docs_url: 'https://rubimindia.vercel.app',
+  flow: 'external',
   id: FEATURED_ID,
-  name: 'Nous Portal',
+  name: 'RUBIMIND AI',
   status: { logged_in: false }
 }
 
@@ -620,11 +627,12 @@ const persistShowAll = (value: boolean) => {
 
 export function Picker({ ctx }: { ctx: OnboardingContext }) {
   const { t } = useI18n()
-  const { localEndpoint, manual, mode, providers } = useStore($desktopOnboarding)
+  const { initialEnvKey, localEndpoint, manual, mode, providers } = useStore($desktopOnboarding)
   const [showAll, setShowAll] = useState(readShowAll)
-  // Which key-form option to preselect when we flip to 'apikey' mode. The
-  // OpenRouter row selects its key; the generic link lands on the first option.
-  const [apiKeyInitialEnv, setApiKeyInitialEnv] = useState<string | undefined>(undefined)
+  // Which key-form option to preselect when we flip to 'apikey' mode.
+  const [apiKeyInitialEnv, setApiKeyInitialEnv] = useState<string | undefined>(
+    () => initialEnvKey ?? undefined
+  )
 
   const openKeyForm = (envKey?: string) => {
     setApiKeyInitialEnv(envKey)
@@ -634,7 +642,13 @@ export function Picker({ ctx }: { ctx: OnboardingContext }) {
   const ordered = useMemo(() => (providers ? sortProviders(providers) : []), [providers])
   const hasOauth = ordered.length > 0
   const apiKeyOptions = useApiKeyCatalog(ctx.scope)
-  const select = (p: OAuthProvider) => void startProviderOAuth(p, ctx)
+  const select = (p: OAuthProvider) => {
+    if (p.id === 'rubimind') {
+      openKeyForm('RUBIMIND_API_KEY')
+    } else {
+      void startProviderOAuth(p, ctx)
+    }
+  }
 
   // localEndpoint forces the key form regardless of `mode` (which a manual
   // provider refresh may flip back to 'oauth'); it preselects the local option
@@ -751,7 +765,7 @@ function KeyFormStep({
   onSelect: (provider: OAuthProvider) => void
   providers: OAuthProvider[]
 }) {
-  const nous = localEndpoint ? null : (providers.find(p => p.id === FEATURED_ID) ?? NOUS_FALLBACK)
+  const nous = localEndpoint ? null : (providers.find(p => p.id === FEATURED_ID) ?? RUBIMIND_FALLBACK)
 
   return (
     <div className="grid gap-3">

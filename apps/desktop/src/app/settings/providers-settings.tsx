@@ -25,7 +25,7 @@ import { cn } from '@/lib/utils'
 import { confirm } from '@/store/confirm'
 import { $localModelsEnabled } from '@/store/local-models-flag'
 import { notify, notifyError } from '@/store/notifications'
-import { $desktopOnboarding, startManualLocalEndpoint, startManualProviderOAuth } from '@/store/onboarding'
+import { $desktopOnboarding, startManualApiKey, startManualLocalEndpoint, startManualProviderOAuth } from '@/store/onboarding'
 import { $settingsRequestProfile } from '@/store/settings-scope'
 import type { EnvVarInfo, OAuthProvider } from '@/types/hermes'
 
@@ -178,7 +178,13 @@ function OAuthPicker({
     return null
   }
 
-  const select = (p: OAuthProvider) => startManualProviderOAuth(p.id, profile)
+  const select = (p: OAuthProvider) => {
+    if (p.id === 'rubimind') {
+      startManualApiKey('RUBIMIND_API_KEY', null, profile)
+    } else {
+      startManualProviderOAuth(p.id, profile)
+    }
+  }
 
   // The free tier holds a token but no account: it is never "connected"; the featured Nous row
   // names it (Nous · free tier) and offers the sign-in that keeps its connectors.

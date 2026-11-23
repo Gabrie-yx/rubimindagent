@@ -217,6 +217,37 @@ export const ptOverrides = {
       description: 'Alternar barra lateral',
       toggle: (open: boolean) => `${open ? 'Ocultar' : 'Mostrar'} barra lateral`
     }
+  },
+  onboarding: {
+    featuredPitch: 'Conecte sua chave de API RUBIMIND (RBM-API-...) para desbloquear os modelos nativos Omni e Core.',
+    recommended: 'Recomendado',
+    freeTier: 'Gratuito',
+    connected: 'Conectado',
+    otherProviders: 'Outros provedores',
+    collapse: 'Recolher',
+    haveApiKey: 'Já tem uma chave de API?'
+  },
+  freeTier: {
+    providerRowTitle: 'RUBIMIND AI',
+    providerRowPitch: 'Conecte sua chave de API RUBIMIND (RBM-API-...) para desbloquear os modelos nativos Omni e Core.',
+    readyTitle: 'RUBIMIND está pronto.',
+    readyCaption: 'Gratuito · conectores incluídos',
+    begin: 'Começar',
+    signInInstead: 'Conectar com chave em vez disso',
+    otherProviders: 'Outros provedores',
+    stripTitle: 'Inferência e conectores RUBIMIND estão disponíveis.',
+    stripBody: 'Abra o seletor de modelos para usá-los ou conecte sua chave de API.',
+    openModelPicker: 'Abrir seletor de modelos',
+    dismiss: 'Dispensar',
+    providerName: 'RUBIMIND',
+    statusLabel: (model: string) => `RUBIMIND · ${model}`,
+    signIn: 'Conectar',
+    signInHeading: 'Conecte sua chave de API RUBIMIND para desbloquear mais modelos e ferramentas.',
+    settingUp: 'Configurando inferência…',
+    finishInBrowser: 'Concluir no navegador',
+    doNotShare: 'Não compartilhe sua chave.',
+    openPageAgain: 'Abrir página novamente',
+    waiting: 'Aguardando conexão…'
   }
 } satisfies TranslationOverrides
 

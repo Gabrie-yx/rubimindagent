@@ -658,11 +658,9 @@ def _oauth_provider_disconnect_command(
 
 def _oauth_provider_disconnect_hint(provider: dict[str, Any], status: dict[str, Any]) -> Optional[str]:
     """Return the manual disconnect path when the API cannot clear this provider."""
-    # "anthropic" is flow == "external" (no in-dashboard login) but Hermes still
-    # OWNS its credential (the PKCE file ~/.hermes/.anthropic_oauth.json and its
-    # credential-pool entry, written by `hermes auth add anthropic`), so it is
-    # excluded from the "external providers can't be auto-disconnected" rule.
-    if provider.get("flow") == "external" and provider.get("id") != "anthropic":
+    # "anthropic" and "rubimind" are flow == "external" (no in-dashboard OAuth login) but Hermes still
+    # OWNS their credentials, so they are excluded from the "external providers can't be auto-disconnected" rule.
+    if provider.get("flow") == "external" and provider.get("id") not in ("anthropic", "rubimind"):
         if _oauth_provider_disconnect_command(provider):
             # Fallback wording for surfaces without the one-click "run in terminal" path.
             return "Managed outside Hermes — run the disconnect command to remove it."
@@ -784,6 +782,16 @@ async def disconnect_oauth_provider(provider_id: str, request: Request, profile:
         # Flow-only rejection first so external providers never reach status resolution.
         _reject_if_not_disconnectable(provider, {})
         _reject_if_not_disconnectable(provider, _resolve_provider_status(provider_id, provider.get("status_fn")))
+
+        if provider_id == "rubimind":
+            try:
+                from hermes_cli.config import clear_env_var
+                cleared = clear_env_var("RUBIMIND_API_KEY")
+                _log.info("oauth/disconnect: rubimind (cleared=%s)", cleared)
+                return {"ok": True, "provider": provider_id}
+            except Exception:
+                _log.exception("disconnect rubimind failed")
+                raise _disconnect_http_error(500, provider["name"])
 
         if provider_id == "anthropic":
             try:

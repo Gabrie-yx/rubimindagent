@@ -15,7 +15,7 @@ export const enOnboarding: Translations['onboarding'] = {
   chooseLater: "I'll choose a provider later",
   recommended: 'Recommended',
   connected: 'Connected',
-  featuredPitch: 'One subscription, 300+ frontier models — the recommended way to run RUBIMIND',
+  featuredPitch: 'Connect your RUBIMIND API key (RBM-API-...) to unlock native Omni and Core models.',
   fireworksPitch: 'Direct model API — Fireworks-hosted frontier models',
   localModelsTitle: 'Run models locally',
   localModelsPitch: 'No account needed — download a model and run it on this machine',

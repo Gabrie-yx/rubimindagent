@@ -46,6 +46,13 @@ export const CONTROL_TEXT = 'text-xs'
 
 export const PROVIDER_GROUPS: ProviderPrefix[] = [
   {
+    prefix: 'RUBIMIND_',
+    name: 'RUBIMIND',
+    description: 'Modelos nativos Omni e Core da plataforma RUBIMIND AI',
+    docsUrl: 'https://rubimindia.vercel.app/',
+    priority: -1
+  },
+  {
     prefix: 'NOUS_',
     name: 'Nous Portal',
     description: 'Hosted Hermes & Nous-trained models',

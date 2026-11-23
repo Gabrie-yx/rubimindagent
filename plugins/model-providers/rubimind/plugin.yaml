@@ -1,0 +1,5 @@
+name: rubimind-provider
+kind: model-provider
+version: 1.0.0
+description: RUBIMIND AI Platform
+author: Gabriel Almeida
