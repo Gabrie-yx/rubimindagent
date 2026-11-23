@@ -1239,18 +1239,26 @@ export function mergeMultiSourceRoster(
  *  'default' — so the word 'default' never surfaces in the UI, unless a real
  *  `hermes` profile on the same source holds that handle (`claimDefaultHandles`). */
 export function botHandle(name: string, bot?: Partial<RosterRow> | null): string {
-  if (bot?.handle && bot.handle !== name && !(bot.hermesHandleTaken && bot.handle === 'hermes')) {
+  const cleanName = (name || '').trim().toLowerCase()
+  if (bot?.handle && bot.handle !== name && !(bot.hermesHandleTaken && (bot.handle === 'rubimind' || bot.handle === 'hermes'))) {
+    if (cleanName === 'default' && bot.handle === 'hermes') {
+      return 'rubimind'
+    }
     return bot.handle
   }
 
-  return (name || '').trim().toLowerCase() === 'default' && !bot?.hermesHandleTaken ? 'hermes' : name
+  return cleanName === 'default' && !bot?.hermesHandleTaken ? 'rubimind' : name
 }
 
 /** The row's own `handle` as a mention form, lowercased. A stale 'hermes'
  *  handle on a default row whose source has a real 'hermes' profile is that
  *  profile's tag, not this row's (same rule as `botHandle`). */
 function claimableRowHandle(bot: Partial<RosterRow>): string {
-  return bot.handle && !(bot.hermesHandleTaken && bot.handle === 'hermes') ? String(bot.handle).toLowerCase() : ''
+  const handle = bot.handle
+  if (!handle) return ''
+  const lower = String(handle).toLowerCase()
+  if (bot.hermesHandleTaken && (lower === 'rubimind' || lower === 'hermes')) return ''
+  return lower === 'hermes' ? 'rubimind' : lower
 }
 
 /** Mark each default row whose source also lists a real `hermes` profile, so
@@ -1259,7 +1267,12 @@ function claimableRowHandle(bot: Partial<RosterRow>): string {
  *  connection; rows without one are the active source. */
 export function claimDefaultHandles<T extends Partial<RosterRow>>(rows: T[]): T[] {
   const taken = new Set(
-    rows.filter(row => String(row?.name || '').trim() === 'hermes').map(row => String(row?.connectionId || ''))
+    rows
+      .filter(row => {
+        const n = String(row?.name || '').trim().toLowerCase()
+        return n === 'rubimind' || n === 'hermes'
+      })
+      .map(row => String(row?.connectionId || ''))
   )
 
   return rows.map(row =>
@@ -1288,7 +1301,7 @@ export function mentionNameForms(value: null | string | undefined): string[] {
   const collapsed = name.replace(/[^a-z0-9_-]+/g, '')
 
   return [...new Set([slug, collapsed])].filter(
-    form => /^[a-z0-9][a-z0-9_-]*$/.test(form) && !['all', 'everyone', 'user', 'default', 'hermes'].includes(form)
+    form => /^[a-z0-9][a-z0-9_-]*$/.test(form) && !['all', 'everyone', 'user', 'default', 'hermes', 'rubimind'].includes(form)
   )
 }
 
@@ -1510,8 +1523,8 @@ export function resolveRosterMentions(
     let token = match[2].toLowerCase()
     const connection = (match[3] || '').toLowerCase()
 
-    if (token === 'hermes') {
-      token = byForm.has('hermes') ? 'hermes' : token
+    if (token === 'hermes' || token === 'rubimind') {
+      token = byForm.has('rubimind') ? 'rubimind' : byForm.has('hermes') ? 'hermes' : token
     }
 
     const bot = connection
@@ -1744,6 +1757,7 @@ export function filterBots(roster: RosterRow[], metaByName: Record<string, BotMe
       display.includes(needle) ||
       profile.includes(needle) ||
       handle.includes(needle) ||
+      (needle === 'hermes' && (profile === 'default' || handle === 'rubimind')) ||
       sourceLabel.includes(needle) ||
       role.includes(needle) ||
       preview.includes(needle)

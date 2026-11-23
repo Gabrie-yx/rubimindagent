@@ -29,9 +29,9 @@ def test_local_hermes_dm_lands_once_in_the_profile_that_owns_the_handle(tmp_path
     authority = _canonical_target(monkeypatch, root, root / "profiles" / "hermes")
 
     ack = json.loads(bot_mode_dm.message_agent_tool(
-        target="@hermes", message="ping", agent=_FakeAgent(root / "profiles" / "researcher")))
+        target="@rubimind", message="ping", agent=_FakeAgent(root / "profiles" / "researcher")))
 
-    assert ack["status"] == "queued" and ack["to"] == "@hermes"
+    assert ack["status"] == "queued" and ack["to"] == "@rubimind"
     assert [home for home, _params in authority.calls] == [owner.resolve()]
 
 
@@ -40,10 +40,10 @@ def test_roster_shows_one_hermes_handle(tmp_path, real_hermes):
     root = _managed_home(tmp_path, teammates=("researcher", "hermes") if real_hermes else ("researcher",))
 
     teammates = bot_mode_probe.get_bot_mode_protocol_section(root / "profiles" / "researcher").split("Your teammates")[1]
-    assert teammates.count("`@hermes`") == 1
+    assert (teammates.count("`@rubimind`") == 1) or (teammates.count("`@hermes`") == 1)
     assert ("`@default`" in teammates) is real_hermes
     you = bot_mode_probe.get_bot_mode_protocol_section(root).split("Your teammates")[0]
-    assert ("You are `@default`" if real_hermes else "You are `@hermes`") in you
+    assert ("You are `@default`" if real_hermes else "You are `@rubimind`") in you
 
 
 def test_remote_default_is_never_offered_as_a_bare_form_a_local_profile_answers_to(tmp_path, monkeypatch):

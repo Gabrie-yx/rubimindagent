@@ -72,15 +72,17 @@ def _profile_name(home: Path) -> str:
 
 def _handle(name: str, names: Collection[str]) -> str:
     """The @handle a local profile answers to; ``names`` are the roster's folder ids. The default
-    profile is @hermes only while no real profile holds that name: a pre-reservation
-    ``profiles/hermes`` keeps @hermes, and the default answers to @default."""
-    return "hermes" if name == "default" and "hermes" not in names else name
+    profile is @rubimind only while no real profile holds that name: a pre-reservation
+    ``profiles/rubimind`` keeps @rubimind, and the default answers to @default."""
+    return "rubimind" if name == "default" and "rubimind" not in names else name
 
 
 def _profile_for_handle(handle: str, names: Collection[str]) -> str:
-    """The folder id a bare @handle names on this install: @hermes is the default profile's alias
-    only while no real profile holds that name (a pre-reservation ``profiles/hermes`` keeps it)."""
-    return "default" if handle == "hermes" and "hermes" not in names else handle
+    """The folder id a bare @handle names on this install: @rubimind or @hermes is the default profile's alias
+    only while no real profile holds that name (a pre-reservation ``profiles/rubimind`` keeps it)."""
+    if handle in ("rubimind", "hermes") and handle not in names:
+        return "default"
+    return handle
 
 
 def _roster(root: Path) -> list[tuple[str, Path]]:
@@ -189,7 +191,7 @@ def _display_name(name: str, profile_dir: Path, names: Collection[str]) -> str:
 
 
 # Tokens the Desktop mention parser reserves; a bot titled "Hermes" never hijacks @hermes.
-_RESERVED_ALIASES = frozenset({"all", "everyone", "user", "default", "hermes"})
+_RESERVED_ALIASES = frozenset({"all", "everyone", "user", "default", "hermes", "rubimind"})
 
 
 def alias_forms(value: str) -> set[str]:

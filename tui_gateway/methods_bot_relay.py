@@ -101,7 +101,7 @@ def _(rid, params: dict, _root=_relay_root) -> dict:
     # not teammates (#99392), so a DM never targets one.
     from tools.bot_mode_probe import _profile_for_handle, _roster
     roster = dict(_roster(root))
-    resolved = _profile_for_handle('hermes', roster) if profile.lower() == 'hermes' else profile
+    resolved = _profile_for_handle(profile, roster) if profile.lower() in ('hermes', 'rubimind') else profile
     home = roster.get(resolved)
     if home is None:
         return _err(rid, 4092, f"no profile '{profile}' on this gateway", data={'reason': 'unknown_profile'})

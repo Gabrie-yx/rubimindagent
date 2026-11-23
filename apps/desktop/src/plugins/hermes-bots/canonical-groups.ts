@@ -223,7 +223,7 @@ function rosterEntry(member: GroupMember, members: GroupMember[], pin: Canonical
   if (!pin) {
     const profile = member.route?.targetProfile ?? member.targetProfile ?? member.name
     // Saved on the gateway and read from any computer: "This device" would be wrong elsewhere.
-    const display = member.display_name || (mixed && profile === 'default' && base !== 'hermes' ? botLabel(member) : undefined)
+    const display = member.display_name || (mixed && profile === 'default' && base !== 'hermes' && base !== 'rubimind' ? botLabel(member) : undefined)
 
     return { member_id: profile, profile, handle: base, target: { kind: 'local', profile },
       ...(display ? { display_name: display } : {}) }

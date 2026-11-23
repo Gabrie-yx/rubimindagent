@@ -72,8 +72,8 @@ beforeEach(() => {
 })
 
 describe('the @handle a bot answers to', () => {
-  it('presents the primary profile as @hermes — "default" never surfaces in the UI', () => {
-    expect(botHandle('default')).toBe('hermes')
+  it('presents the primary profile as @rubimind — "default" never surfaces in the UI', () => {
+    expect(botHandle('default')).toBe('rubimind')
     expect(botHandle('ops')).toBe('ops')
   })
 
@@ -94,7 +94,7 @@ describe('renamed bots stay taggable', () => {
 
     expect(botMentionTag(row({ name: 'writer' }))).toBe('research-buddy')
     expect(botMentionTag(row({ name: 'ops' }))).toBe('ops')
-    expect(botMentionTag(row({ name: 'default' }))).toBe('hermes')
+    expect(botMentionTag(row({ name: 'default' }))).toBe('rubimind')
     // display_name (`hermes profile rename`) drives the tag too.
     expect(botMentionTag(row({ display_name: 'Deal Finder', name: 'scout' }))).toBe('deal-finder')
   })

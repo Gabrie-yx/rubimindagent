@@ -334,8 +334,8 @@ async function relayAgentsOn(
     )
 
     const profiles = Array.isArray(res?.profiles) ? res.profiles : []
-    // This connection's default is @hermes only while it has no real 'hermes' profile.
-    const hermesTaken = profiles.some(profile => profile?.name === 'hermes')
+    // This connection's default is @rubimind only while it has no real 'rubimind' or 'hermes' profile.
+    const hermesTaken = profiles.some(profile => profile?.name === 'hermes' || profile?.name === 'rubimind')
     const label = labels.get(connection.id) || connection.id
 
     const rows = profiles

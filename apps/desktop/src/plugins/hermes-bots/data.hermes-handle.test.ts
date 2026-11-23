@@ -38,17 +38,17 @@ function roster(names: string[]): RosterRow[] {
   return mergeMultiSourceRoster(local, union, 'local').profiles as RosterRow[]
 }
 
-describe('the @hermes handle', () => {
+describe('the @rubimind handle', () => {
   it.each([
-    [['default', 'researcher'], 'default'],
-    [['default', 'hermes', 'researcher'], 'hermes']
-  ])('roster %j shows one @hermes and a typed @hermes reaches %s', (names, owner) => {
+    [['default', 'researcher'], 'default', 'rubimind'],
+    [['default', 'hermes', 'researcher'], 'hermes', 'hermes']
+  ])('roster %j shows one handle %s and a typed @ reaches %s', (names, owner, expectedHandle) => {
     const rows = roster(names)
     const handles = rows.map(row => botHandle(row.name, row))
 
-    expect(handles.filter(handle => handle === 'hermes')).toHaveLength(1)
-    expect(rows.map(row => botMentionTag(row)).filter(tag => tag === 'hermes')).toHaveLength(1)
-    expect(resolveRosterMentions('@hermes ping', rows, { name: 'researcher' }).map(row => row.name)).toEqual([owner])
+    expect(handles.filter(handle => handle === expectedHandle)).toHaveLength(1)
+    expect(rows.map(row => botMentionTag(row)).filter(tag => tag === expectedHandle)).toHaveLength(1)
+    expect(resolveRosterMentions(`@${expectedHandle} ping`, rows, { name: 'researcher' }).map(row => row.name)).toEqual([owner])
   })
 
   it('names the default @default once a real hermes profile holds the handle', () => {
@@ -66,7 +66,7 @@ describe('the @hermes handle', () => {
       { connectionId: 'mini', name: 'hermes' }
     ])
 
-    expect(rows.map(row => botHandle(String(row.name), row))).toEqual(['hermes', 'default', 'hermes'])
+    expect(rows.map(row => botHandle(String(row.name), row))).toEqual(['rubimind', 'default', 'hermes'])
   })
 
   it("never lets a source's stale 'hermes' handle on its default answer @hermes", () => {
@@ -89,9 +89,9 @@ describe('the @hermes handle', () => {
       previewKind(`Message from 🤖 ${name} (@x): hi`, list, 'local').fromBot
 
     expect([sender('default', rows), sender('hermes', rows)]).toEqual(['default', 'hermes'])
-    // No real hermes profile: the default is still @hermes (#89484).
+    // No real hermes profile: the default is still @rubimind (#89484).
     expect(sender('default', claimDefaultHandles<RosterRow>([{ connectionId: 'local', name: 'default' }]))).toBe(
-      'hermes'
+      'rubimind'
     )
   })
 })
