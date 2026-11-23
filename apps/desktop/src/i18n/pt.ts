@@ -248,6 +248,16 @@ export const ptOverrides = {
     doNotShare: 'Não compartilhe sua chave.',
     openPageAgain: 'Abrir página novamente',
     waiting: 'Aguardando conexão…'
+  },
+  updates: {
+    versionDetailsDistribution: 'Distribuição',
+    versionDetailsDistributionDesktop: 'Aplicativo Desktop',
+    versionDetailsDistributionDesktopInstaller: 'Aplicativo Desktop (instalador)',
+    versionDetailsDistributionSource: 'Código-fonte',
+    versionDetailsDistributionSourceInstaller: 'Código-fonte (script de instalação)',
+    versionDetailsDistributionSourceDesktop: 'Código-fonte + RUBIMIND Desktop',
+    versionDetailsDistributionSourceInstallerDesktop: 'Código-fonte (script de instalação) + RUBIMIND Desktop',
+    versionDetailsInstallId: 'ID de instalação'
   }
 } satisfies TranslationOverrides
 

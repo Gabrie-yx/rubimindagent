@@ -1309,7 +1309,19 @@ if (isPrimaryInstance) {
 // ACTIVE_HERMES_ROOT — the canonical mutable Hermes install. Same path
 // install.ps1 / install.sh use, so a desktop-only user and a CLI-only user end
 // up with identical layouts and can share one install.
-const ACTIVE_HERMES_ROOT = path.join(HERMES_HOME, 'hermes-agent')
+function resolveActiveHermesRoot(home: string): string {
+  const rubimindCandidate = path.join(home, 'rubimind-agent')
+  if (fs.existsSync(rubimindCandidate)) {
+    return rubimindCandidate
+  }
+  const hermesCandidate = path.join(home, 'hermes-agent')
+  if (fs.existsSync(hermesCandidate)) {
+    return hermesCandidate
+  }
+  return rubimindCandidate
+}
+
+const ACTIVE_HERMES_ROOT = resolveActiveHermesRoot(HERMES_HOME)
 setNoConsoleGitRoots([!IS_PACKAGED ? SOURCE_REPO_ROOT : null, ACTIVE_HERMES_ROOT])
 // VENV_ROOT — venv lives inside the repo, exactly like install.ps1 does it.
 const VENV_ROOT = path.join(ACTIVE_HERMES_ROOT, 'venv')
@@ -1324,7 +1336,19 @@ const VENV_ROOT = path.join(ACTIVE_HERMES_ROOT, 'venv')
 // We deliberately put the marker INSIDE ACTIVE_HERMES_ROOT (not alongside)
 // so that deleting the checkout to start fresh also deletes the marker --
 // avoids the confusing "marker exists but checkout is gone" state.
-const BOOTSTRAP_COMPLETE_MARKER = path.join(ACTIVE_HERMES_ROOT, '.hermes-bootstrap-complete')
+function resolveBootstrapCompleteMarker(activeRoot: string): string {
+  const rubimindMarker = path.join(activeRoot, '.rubimind-bootstrap-complete')
+  if (fs.existsSync(rubimindMarker)) {
+    return rubimindMarker
+  }
+  const hermesMarker = path.join(activeRoot, '.hermes-bootstrap-complete')
+  if (fs.existsSync(hermesMarker)) {
+    return hermesMarker
+  }
+  return rubimindMarker
+}
+
+const BOOTSTRAP_COMPLETE_MARKER = resolveBootstrapCompleteMarker(ACTIVE_HERMES_ROOT)
 const BOOTSTRAP_MARKER_SCHEMA_VERSION = 1
 
 const DESKTOP_CONNECTION_CONFIG_PATH = path.join(app.getPath('userData'), 'connection.json')
@@ -3379,7 +3403,9 @@ function resolveUpdateRoot() {
   const candidates = [
     process.env.HERMES_DESKTOP_HERMES_ROOT && path.resolve(process.env.HERMES_DESKTOP_HERMES_ROOT),
     !IS_PACKAGED && isHermesSourceRoot(SOURCE_REPO_ROOT) ? SOURCE_REPO_ROOT : null,
-    isHermesSourceRoot(ACTIVE_HERMES_ROOT) ? ACTIVE_HERMES_ROOT : null
+    isHermesSourceRoot(ACTIVE_HERMES_ROOT) ? ACTIVE_HERMES_ROOT : null,
+    isHermesSourceRoot(path.join(HERMES_HOME, 'rubimind-agent')) ? path.join(HERMES_HOME, 'rubimind-agent') : null,
+    isHermesSourceRoot(path.join(HERMES_HOME, 'hermes-agent')) ? path.join(HERMES_HOME, 'hermes-agent') : null
   ].filter(Boolean)
 
   return candidates.find(isGitCheckout) || candidates[0] || ACTIVE_HERMES_ROOT
