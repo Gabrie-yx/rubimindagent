@@ -1,4 +1,4 @@
-# Hermes Agent bootstrap: git checkout + venv + hermes command on PATH.
+﻿# Hermes Agent bootstrap: git checkout + venv + hermes command on PATH.
 # Heavy dependencies (tool binaries, browsers, node) are pm's job after
 # this: `hermes pm install`. Stage protocol kept for Hermes-Setup:
 #   -Manifest             print the stage list as JSON
@@ -1369,10 +1369,18 @@ function Get-BootstrapPython {
     $bootPy = (Invoke-Native -Utf8Output { & $uv python find --managed-python --no-project $pyRequest 2>$null }) -join "`n"
     if ($LASTEXITCODE -or -not $bootPy) {
         Invoke-Logged "Downloading Python $pyVersion" { & $uv python install --no-bin --no-registry $pyRequest }
-        if ($LASTEXITCODE) { Fail "bootstrap Python installation failed" python_install_failed }
-        $bootPy = (Invoke-Native -Utf8Output { & $uv python find --managed-python --no-project $pyRequest }) -join "`n"
+        if ($LASTEXITCODE) {
+            Invoke-Logged "Retrying Python download ($pyVersion)" { & $uv python install $pyVersion }
+        }
+        $bootPy = (Invoke-Native -Utf8Output { & $uv python find --managed-python --no-project $pyRequest 2>$null }) -join "`n"
+        if (-not $bootPy) {
+            $bootPy = (Invoke-Native -Utf8Output { & $uv python find --no-project $pyVersion 2>$null }) -join "`n"
+        }
+        if (-not $bootPy) {
+            $bootPy = (Invoke-Native -Utf8Output { & $uv python find --no-project 2>$null }) -join "`n"
+        }
     }
-    if ($LASTEXITCODE -or -not $bootPy) { Fail "bootstrap Python lookup failed" python_install_failed }
+    if (-not $bootPy) { Fail "bootstrap Python lookup failed" python_install_failed }
     $script:BootstrapPython = $bootPy.Trim()
     return $script:BootstrapPython
 }

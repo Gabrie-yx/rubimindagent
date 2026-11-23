@@ -45,13 +45,20 @@ export interface LocalBootFailureCopy {
   rawDetail: string | null
 }
 
+export function sanitizeBootErrorText(text: string): string {
+  return text
+    .replace(/^Error invoking remote method '[^']+':\s*/gi, '')
+    .replace(/\bHermes\b/g, 'RUBIMIND')
+    .replace(/\bhermes\b/g, 'rubimind')
+}
+
 /** Copy for the overlay's red box: a classified cause when one is known,
  *  otherwise the raw error's FIRST line (never a traceback dump). */
 export function localBootFailureCopy(
   error: string | null | undefined,
   causes: Record<LocalBootCause, string>
 ): LocalBootFailureCopy {
-  const raw = String(error || '').trim()
+  const raw = sanitizeBootErrorText(String(error || '').trim())
   const cause = classifyLocalBootFailure(raw)
 
   if (cause) {

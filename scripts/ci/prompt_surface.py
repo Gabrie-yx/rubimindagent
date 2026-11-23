@@ -206,9 +206,11 @@ def render(out: Path) -> int:
             "TZ": "UTC", "LANG": "C.UTF-8", "PYTHONHASHSEED": "0", "PYTHONPATH": str(ROOT),
             "TMPDIR": tmp, "PYTHONDONTWRITEBYTECODE": "1",
         }
-        for key in ("HERMES_RUNTIME_DIR", "SYSTEMROOT"):
+        for key in ("HERMES_RUNTIME_DIR", "SYSTEMROOT", "USERPROFILE", "APPDATA", "LOCALAPPDATA", "HOMEDRIVE", "HOMEPATH"):
             if os.environ.get(key):
                 env[key] = os.environ[key]
+        if "USERPROFILE" not in env or not env["USERPROFILE"]:
+            env["USERPROFILE"] = str(home)
         proc = subprocess.run(
             [sys.executable, str(Path(__file__).resolve()), "_child", str(staging)],
             env=env, cwd=tmp, capture_output=True, text=True, encoding="utf-8", timeout=600, check=False,

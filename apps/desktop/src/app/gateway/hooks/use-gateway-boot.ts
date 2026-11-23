@@ -523,7 +523,7 @@ export function useGatewayBoot({
               }) ?? Promise.reject(new Error('Registry gateway connection is unavailable')))
             : desktop.getConnection(primaryConnection?.profile),
           RECONNECT_ATTEMPT_TIMEOUT_MS,
-          'Timed out reconnecting to Hermes backend'
+          'Timed out reconnecting to RUBIMIND backend'
         )
 
         // A boot/connection apply that recorded a newer primary route during
@@ -895,7 +895,7 @@ export function useGatewayBoot({
         const conn = await withTimeout(
           getWindowBackend(),
           BACKEND_BOOT_WAIT_TIMEOUT_MS,
-          'Timed out reconnecting to Hermes backend'
+          'Timed out reconnecting to RUBIMIND backend'
         )
 
         if (!ownsSwitch()) {
@@ -1540,7 +1540,7 @@ export function useGatewayBoot({
         const conn = await withTimeout(
           getWindowBackend(true),
           BACKEND_BOOT_WAIT_TIMEOUT_MS,
-          'Timed out connecting to Hermes backend'
+          'Timed out connecting to RUBIMIND backend'
         )
 
         if (cancelled) {
