@@ -97,12 +97,37 @@ function ConnectingOverlayView({ decoding, onExit, phase }: ConnectingOverlayVie
       {onExit ? (
         <SlowSetupStart onExit={onExit} />
       ) : (
-        <div className="flex flex-col items-center justify-center gap-4">
+        <div className="flex flex-col items-center justify-center gap-6 select-none">
+          {/* Logo container with subtle ambient glow */}
           <div className="relative flex items-center justify-center">
-            <div className="absolute h-16 w-16 animate-ping rounded-full bg-red-600/30 duration-1000" />
-            <div className="absolute h-24 w-24 animate-pulse rounded-full bg-red-600/15" />
-            <span className="relative text-3xl font-bold tracking-[0.35em] text-red-600 drop-shadow-[0_0_12px_rgba(220,38,38,0.7)] animate-pulse">
-              {TEXT}
+            <div className="absolute -inset-4 rounded-3xl bg-red-600/10 blur-xl animate-pulse" />
+            <div className="relative h-20 w-20 rounded-2xl bg-zinc-950/80 p-2.5 shadow-2xl ring-1 ring-red-500/20 backdrop-blur-md">
+              <img
+                src="/rubimind.png"
+                alt="RUBIMIND"
+                className="h-full w-full object-contain filter drop-shadow-[0_2px_8px_rgba(220,38,38,0.4)]"
+              />
+            </div>
+          </div>
+
+          {/* Typography & Subtitle */}
+          <div className="flex flex-col items-center gap-2">
+            <h1 className="text-xl font-bold tracking-[0.25em] text-zinc-100 flex items-center gap-2">
+              <span>RUBI</span>
+              <span className="text-red-500 font-extrabold drop-shadow-[0_0_10px_rgba(239,68,68,0.5)]">MIND</span>
+            </h1>
+            <p className="text-[11px] font-medium tracking-[0.18em] uppercase text-zinc-500">
+              Personal AI Intelligence
+            </p>
+          </div>
+
+          {/* Minimalist sleek progress bar */}
+          <div className="w-56 mt-2 flex flex-col items-center gap-2">
+            <div className="relative h-1 w-full overflow-hidden rounded-full bg-zinc-900 ring-1 ring-zinc-800">
+              <div className="rubimind-progress-bar absolute inset-y-0 left-0 w-2/5 rounded-full bg-gradient-to-r from-red-600 via-rose-500 to-red-400 shadow-[0_0_8px_rgba(239,68,68,0.8)]" />
+            </div>
+            <span className="text-[10px] text-zinc-500 font-mono tracking-wider">
+              CONECTANDO AO GATEWAY...
             </span>
           </div>
         </div>

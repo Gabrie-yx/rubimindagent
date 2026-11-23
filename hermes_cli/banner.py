@@ -1,4 +1,4 @@
-﻿"""Welcome banner, ASCII art, skills summary, and update check for the CLI."""
+"""Welcome banner, ASCII art, skills summary, and update check for the CLI."""
 import json
 import logging
 import os
