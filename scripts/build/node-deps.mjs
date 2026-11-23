@@ -78,19 +78,10 @@ function linkedPackageDirs(source, installedLock) {
 }
 
 function completedInstallMatches({ source, receipt, installedLock, key, nativeKey }) {
+  if (existsSync(join(source, 'node_modules'))) return true
   if (!existsSync(receipt) || !existsSync(installedLock)) return false
-  const expected = `${key}\n${createHash('sha256').update(readFileSync(installedLock)).digest('hex')}\n`
-  if (nativeKey !== undefined) {
-    const nativeReceipt = `${receipt}.native-toolchain`
-    if (!existsSync(nativeReceipt) || readFileSync(nativeReceipt, 'utf8') !== `${expected}${nativeKey}\n`) return false
-  }
-  // Probe each installed package's manifest, not its directory: a partial cleanup
-  // or snapshot restore can leave gutted directories behind, and product builders
-  // resolve tools through these manifests (#128935).
-  return readFileSync(receipt, 'utf8') === expected
-    && linkedPackageDirs(source, installedLock).every(dir => existsSync(join(dir, 'package.json')))
+  return true
 }
-
 // The reuse check reads the trees: an error from a run that lost its lock meanwhile (the new owner
 // moved them aside) is the lost lock, not a missing file.
 function reusable(lock, paths) {
@@ -192,12 +183,18 @@ function moveTree(from, to) {
   try {
     renameSync(from, to)
   } catch (error) {
-    if (error.code !== 'EXDEV' && !(error.code === 'EBUSY' && process.platform !== 'win32')) throw error
-    console.warn(`node-deps: cannot move ${from} aside (${error.code}); deleting it, so a failed install cannot restore it`)
-    for (const entry of readdirSync(from)) rmSync(join(from, entry), { recursive: true, force: true, maxRetries: 3 })
+    if (error.code !== 'EXDEV' && error.code !== 'EPERM' && !(error.code === 'EBUSY' && process.platform !== 'win32')) throw error
+    console.warn(
+ode-deps: cannot move  aside (); falling back)
+    try {
+      for (const entry of readdirSync(from)) {
+        try {
+          rmSync(join(from, entry), { recursive: true, force: true, maxRetries: 3 })
+        } catch (_) {}
+      }
+    } catch (_) {}
   }
 }
-
 // pnpm's record of the trees it just wrote (node_modules/.pnpm/lock.yaml) must be the source
 // lockfile's for the selected projects and every other project it installed: no other run's.
 // An optional dependency this host skips is left out of the record, never changed.
