@@ -443,7 +443,7 @@ export interface Translations extends NoticeTranslations {
     desktopOutOfDateMessage: string
     updateDesktopApp: string
     installMethodUnsupportedTitle: string
-    updateHermes: string
+    updateRUBIMIND: string
     updateReadyTitle: string
     updateReadyMessage: (count: number) => string
     updateReadyMessageUnknown: string
@@ -472,10 +472,10 @@ export interface Translations extends NoticeTranslations {
       openaiTtsNeedsKey: string
       codeSkewRestartRequired: string
       rpcOutOfSync: string
-      restartHermesFailed: string
+      restartRUBIMINDFailed: string
     }
     actions: {
-      restartHermes: string
+      restartRUBIMIND: string
       openKeys: string
       openGateways: string
       openMaintenance: string
@@ -1258,9 +1258,9 @@ export interface Translations extends NoticeTranslations {
       sshPortDesc: string
       sshKeyTitle: string
       sshKeyDesc: string
-      sshHermesPathTitle: string
-      sshHermesPathDesc: string
-      sshHermesPathPlaceholder: string
+      sshRUBIMINDPathTitle: string
+      sshRUBIMINDPathDesc: string
+      sshRUBIMINDPathPlaceholder: string
       sshTestConnection: string
       sshConnect: string
       sshButtonsHint: string
@@ -2208,7 +2208,7 @@ export interface Translations extends NoticeTranslations {
     sharedGatewayRestartDescription: (bots: string) => string
     sharedGatewayRestartConfirm: string
     sharedGatewayRestarted: (count: number) => string
-    updateHermes: string
+    updateRUBIMIND: string
     reloadWindow: string
     actionRunning: string
     actionDone: string
@@ -3472,7 +3472,7 @@ export interface Translations extends NoticeTranslations {
     }
     // First-launch set-up failure notice: the free tier could not be created at boot.
     // One sentence per backend code (`hermes_cli/anon_auth.py::ANON_*`); the copy never says
-    // the free MODEL is off — what is unavailable is using Hermes without signing in.
+    // the free MODEL is off — what is unavailable is using RUBIMIND without signing in.
     setupFailed: {
       gateClosed: string
       paused: string
@@ -4028,8 +4028,8 @@ export interface Translations extends NoticeTranslations {
       /** Error card body when a Nous account is out of credits (its button opens Settings → Billing). */
       errorCompressConversation: string
       errorCompressFailed: string
-      errorOpenHermesFolder: string
-      errorOpenHermesFolderFailed: string
+      errorOpenRUBIMINDFolder: string
+      errorOpenRUBIMINDFolderFailed: string
       errorUpdateApiKey: string
       /** One-click recovery for an expired/revoked OAuth grant: re-runs that
        *  provider's sign-in flow (auth layer, authKind 'oauth'). */

@@ -33,9 +33,9 @@ export const enNotices = {
     desktopCommands: enDesktopCommands
   },
   keepAwakeOffer: {
-    title: 'Your computer slept while Hermes was working',
+    title: 'Your computer slept while RUBIMIND was working',
     message:
-      'Hermes can keep your computer awake while a task runs. The screen still turns off, and on battery your computer may still sleep.',
+      'RUBIMIND can keep your computer awake while a task runs. The screen still turns off, and on battery your computer may still sleep.',
     action: 'Keep awake while working'
   },
   connectorOffer: {
