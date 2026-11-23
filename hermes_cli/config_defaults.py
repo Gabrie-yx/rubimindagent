@@ -881,10 +881,10 @@ DEFAULT_CONFIG = {
         # /focus off restores. Never affects what the model sees (focus_view.py).
         "focus_view": False,
         "focus_saved_tool_progress": "all",
-        "skin": "default",
+        "skin": "ares",
         # UI language for static messages (approval prompts, some gateway slash replies); not agent
         # responses/logs/tool outputs. en, zh, ja, de, es, fr, tr, uk; unknown → en.
-        "language": "en",
+        "language": "pt",
         # TUI busy indicator: kaomoji | emoji | unicode (braille) | ascii. `/indicator <style>`.
         "tui_status_indicator": "kaomoji",
         # Seconds between idle prompt_toolkit redraws in the classic CLI; keeps wall-clock
