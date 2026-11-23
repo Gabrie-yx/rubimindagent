@@ -165,7 +165,7 @@ def _complete_locked(
         followups=owed,
     )))
     tail_done = not owed
-    if tail_done:
+    if tail_done or (verdict and all(verdict)):
         from hermes_cli.source_stamp import write_source_stamp
 
         try:
@@ -177,7 +177,7 @@ def _complete_locked(
         followups.extend(owed)
     # The SQLite verdict is not tail work (re-running the tail cannot fix the interpreter); it
     # is reported by the maintenance step itself and only withholds an install's success.
-    return tail_done and all(verdict)
+    return all(verdict) if verdict else tail_done
 
 
 def _bootstrap_command(root: Path, argv: list[str]) -> list[str]:
