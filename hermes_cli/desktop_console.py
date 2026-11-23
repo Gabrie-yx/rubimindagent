@@ -1,5 +1,6 @@
 """Keep Windows console backpressure off the packaged desktop startup path."""
 
+import contextlib
 import logging
 import os
 import sys
@@ -11,11 +12,10 @@ logger = logging.getLogger("hermes_cli.desktop")
 
 
 def desktop_launch_notice(message: str, *, source_mode: bool = False) -> None:
+    print(message)
     if sys.platform == "win32" and not source_mode:
-        # setup_logging() uses an async queue and rotating, redacted files.
-        logger.info(message)
-    else:
-        print(message)
+        with contextlib.suppress(Exception):
+            logger.info(message)
 
 
 @contextmanager
