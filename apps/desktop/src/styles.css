@@ -601,13 +601,26 @@
 
   :root.dark {
     /* Per-mode mix knobs — overridden inline by `applyTheme()` per skin. */
-    --theme-mix-chrome: 74%;
-    --theme-mix-card: 38%;
-    --theme-mix-elevated: 46%;
-    --theme-mix-bubble: 46%;
+    --theme-mix-chrome: 0%;
+    --theme-mix-sidebar: 0%;
+    --theme-mix-card: 0%;
+    --theme-mix-elevated: 0%;
+    --theme-mix-bubble: 0%;
     --theme-neutral-chrome: #000000;
     --theme-neutral-sidebar: #000000;
     --theme-neutral-card: #080808;
+
+    --theme-fill-primary-accent-mix: 0%;
+    --theme-fill-secondary-accent-mix: 0%;
+    --theme-fill-tertiary-accent-mix: 0%;
+    --theme-fill-quaternary-accent-mix: 0%;
+    --theme-fill-quinary-accent-mix: 0%;
+    --theme-row-hover-accent-mix: 0%;
+    --theme-row-active-accent-mix: 0%;
+    --theme-control-hover-accent-mix: 0%;
+    --theme-control-active-accent-mix: 0%;
+    --warm-glow: transparent;
+    --ui-bg-card: #080808;
 
     /* Dark-only accent palette overrides. */
     --ui-red: #ef4444;

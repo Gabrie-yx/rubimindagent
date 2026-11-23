@@ -272,7 +272,7 @@ function renderedModeFor(colors: DesktopThemeColors, mode: 'light' | 'dark'): 'l
 // `:root.dark`; setting them inline keeps active-skin overrides surviving
 // the boot-time paint.
 // styles.css --theme-neutral-chrome — keep in sync.
-const NEUTRAL_CHROME = { light: '#f3f3f3', dark: '#0d0d0e' } as const
+const NEUTRAL_CHROME = { light: '#f3f3f3', dark: '#000000' } as const
 
 // The one foreground --dt-primary-solid is built to carry. Fixed rather than
 // measured: the surface is derived to suit IT, not the other way round.
@@ -280,14 +280,14 @@ const NEUTRAL_CHROME = { light: '#f3f3f3', dark: '#0d0d0e' } as const
 const PRIMARY_SOLID_FOREGROUND = '#fcfcfc'
 
 const chromeBackground = (background: string, isDark: boolean) =>
-  mix(background, NEUTRAL_CHROME[isDark ? 'dark' : 'light'], isDark ? 0.26 : 0.08)
+  isDark ? '#000000' : mix(background, NEUTRAL_CHROME.light, 0.08)
 
 const mixesFor = (isDark: boolean): Record<string, string> => ({
-  '--theme-mix-chrome': isDark ? '74%' : '92%',
-  '--theme-mix-sidebar': '100%',
-  '--theme-mix-card': isDark ? '38%' : '22%',
-  '--theme-mix-elevated': isDark ? '46%' : '28%',
-  '--theme-mix-bubble': isDark ? '46%' : '0%'
+  '--theme-mix-chrome': isDark ? '0%' : '92%',
+  '--theme-mix-sidebar': isDark ? '0%' : '100%',
+  '--theme-mix-card': isDark ? '0%' : '22%',
+  '--theme-mix-elevated': isDark ? '0%' : '28%',
+  '--theme-mix-bubble': '0%'
 })
 
 const TYPOGRAPHY_KNOB_VARS = {
