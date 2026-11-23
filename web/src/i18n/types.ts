@@ -181,11 +181,11 @@ export interface Translations {
     starting: string;
     startedInBackground: string;
     stopped: string;
-    updateHermes: string;
-    updateHermesConfirmMessage?: string;
-    updateHermesConfirmNow?: string;
-    updateHermesConfirmTitle?: string;
-    updatingHermes: string;
+    updateRUBIMIND: string;
+    updateRUBIMINDConfirmMessage?: string;
+    updateRUBIMINDConfirmNow?: string;
+    updateRUBIMINDConfirmTitle?: string;
+    updatingRUBIMIND: string;
     waitingForOutput: string;
   };
 

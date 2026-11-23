@@ -1,5 +1,5 @@
 /**
- * Deleting a bot deletes its Hermes profile, then everything plugin-local
+ * Deleting a bot deletes its RUBIMIND profile, then everything plugin-local
  * that would otherwise leave stale appearance/unread data behind.
  *
  * `host.deleteProfile` is preferred whenever the Desktop build ships it: it
@@ -13,7 +13,7 @@
  * under `vm`.
  */
 
-import type * as HermesSdk from '@hermes/plugin-sdk'
+import type * as RUBIMINDSdk from '@hermes/plugin-sdk'
 import { beforeAll, beforeEach, describe, expect, it, vi } from 'vitest'
 
 import type { ProfileRoute, RosterRow } from './types'
@@ -51,7 +51,7 @@ const { forgetSessionUnread, invalidateQueries, newChat, overrides, request, sta
 })
 
 vi.mock('@hermes/plugin-sdk', async importOriginal => {
-  const sdk = await importOriginal<typeof HermesSdk>()
+  const sdk = await importOriginal<typeof RUBIMINDSdk>()
 
   overrides.newChat = newChat
   overrides.request = request
