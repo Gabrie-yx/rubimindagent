@@ -33,6 +33,7 @@ _HERMES_CORE_TOOLS = [
     "computer_use",
     # Service-gated connector account status and authorization links.
     "manage_connections",
+    "cadastral_query",
 ]
 
 # Webhook payloads are untrusted third-party content: no file/system execution.
@@ -69,6 +70,10 @@ CLIENT_SURFACE_TOOLSETS = frozenset({"project", "desktop_ui", "catalog"})
 # Core toolset definitions: individual tools or references to other toolsets.
 TOOLSETS = {
     # Basic toolsets - individual tool categories
+    "cadastral": _ts(
+        "Real-time Brazilian cadastral and forensic records via RUBIMIND API (CPF, CNPJ, telefone, placa, nome, email)",
+        ["cadastral_query"],
+    ),
     "web": _ts("Web research and content extraction tools", ["web_search", "web_extract"]),
     "search": _ts("Web search only (no content extraction/scraping)", ["web_search"]),
     "x_search": _ts(
