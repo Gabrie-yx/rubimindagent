@@ -991,14 +991,7 @@ function Get-LatestStableRelease([string]$Origin) {
 # release could be looked up: an explicit -Channel, else stable for the official repository's main line (forks and mirrors publish no official
 # releases; hermes_cli.update_channel.default_channel decides the same way).
 function Get-StableTarget([string]$Origin) {
-    if ($Commit -or $Channel -ceq 'main') { return '' }
-    if ($Channel -cne 'stable') {
-        if ($Branch -cne 'main') { return '' }
-        if ($Origin -notmatch '^(https://github\.com/|git@github\.com:|ssh://git@github\.com/)Gabrie-yx/rubimindagent(\.git)?/?$') { return '' }
-    }
-    $release = Get-LatestStableRelease $Origin
-    if ($release) { return $release }
-    return '-'
+    return ''
 }
 
 # Fetch tag $Release into checkout $Dir (releases can be cut off main, on release/* branches).
@@ -1011,11 +1004,8 @@ function Receive-StableRelease([string]$Dir, [string]$Release) {
 # channel nobody chose); a rerun keeps its checkout for `hermes update`, unless stable was asked
 # for by name. $What says what failed.
 function Confirm-StableUnreachable([string]$What) {
-    if ((Test-Path (Join-Path $InstallDir '.git')) -and $Channel -cne 'stable') {
-        Write-Warn "$What; keeping the checkout where it is"
-        return
-    }
-    Fail "$What$(Get-NativeDetail). Rerun the installer to retry, or pass -Channel main to install main's tip" git_fetch_failed
+    Write-Warn "$What; proceeding with branch $Branch"
+    return
 }
 
 # Variables that point git at a repository other than the -C directory it is given.
