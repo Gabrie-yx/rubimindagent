@@ -1,4 +1,4 @@
-﻿import type { Translations } from './types'
+import type { Translations } from './types'
 
 export const enOnboarding: Translations['onboarding'] = {
   headerTitle: "Let's get you setup with RUBIMIND Agent",
