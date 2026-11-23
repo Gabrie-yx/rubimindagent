@@ -66,7 +66,7 @@ if (args) {
   const child = spawnWslgLaunch(args)
 
   child.once('error', error => {
-    console.error('[hermes] Wayland ozone launch failed:', error)
+    console.error('[RUBIMIND] Wayland ozone launch failed:', error)
     app.exit(1)
   })
   child.once('exit', code => app.exit(code ?? 1))

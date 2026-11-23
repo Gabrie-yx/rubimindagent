@@ -757,7 +757,7 @@ function acquireSingleInstanceLock(): boolean {
   const stalePid = removeStaleSingletonLock(app.getPath('userData'))
 
   if (stalePid !== null) {
-    console.error(`[hermes] removed stale SingletonLock (owner ${stalePid} dead); retrying launch`)
+    console.error(`[RUBIMIND] removed stale SingletonLock (owner ${stalePid} dead); retrying launch`)
 
     return app.requestSingleInstanceLock()
   }
@@ -769,7 +769,7 @@ const isPrimaryInstance: boolean = acquireSingleInstanceLock()
 const relauncher = createAppRelauncher(app)
 
 if (!isPrimaryInstance) {
-  console.error('[hermes] another Hermes Desktop instance holds the single-instance lock; exiting')
+  console.error('[RUBIMIND] another Hermes Desktop instance holds the single-instance lock; exiting')
   app.exit(0)
 }
 
@@ -831,7 +831,7 @@ if (REMOTE_DISPLAY_REASON) {
   }
 
   console.log(
-    `[hermes] remote display detected (${REMOTE_DISPLAY_REASON}); disabling GPU hardware acceleration to prevent flicker`
+    `[RUBIMIND] remote display detected (${REMOTE_DISPLAY_REASON}); disabling GPU hardware acceleration to prevent flicker`
   )
 }
 
@@ -869,7 +869,7 @@ if (IS_WINDOWS) {
     app.disableHardwareAcceleration()
     app.commandLine.appendSwitch('disable-gpu-compositing')
     console.log(
-      `[hermes] Windows GPU stack-cookie fallback enabled (${gpuStackCookieDecision.reason}); disabling GPU hardware acceleration (0xC0000409 / #108047)`
+      `[RUBIMIND] Windows GPU stack-cookie fallback enabled (${gpuStackCookieDecision.reason}); disabling GPU hardware acceleration (0xC0000409 / #108047)`
     )
   }
 }
@@ -886,14 +886,14 @@ if (DEV_CDP.port) {
   // so a future edit can't widen it by omission.
   app.commandLine.appendSwitch('remote-debugging-address', '127.0.0.1')
   console.log(
-    `[hermes] renderer debugging on http://127.0.0.1:${DEV_CDP.port} — anything that can reach it ` +
+    `[RUBIMIND] renderer debugging on http://127.0.0.1:${DEV_CDP.port} — anything that can reach it ` +
       'can run code in the renderer. HERMES_DESKTOP_CDP_PORT=off to disable.'
   )
 } else {
   const why = describeDevCdpDecision(DEV_CDP)
 
   if (why) {
-    console.warn(`[hermes] ${why}`)
+    console.warn(`[RUBIMIND] ${why}`)
   }
 }
 
@@ -910,7 +910,7 @@ if (
   app.commandLine.appendSwitch('ignore-gpu-blocklist')
   app.commandLine.appendSwitch('enable-gpu-rasterization')
   app.commandLine.appendSwitch('enable-zero-copy')
-  console.log('[hermes] WSL GPU passthrough (/dev/dxg) detected; enabling GPU acceleration')
+  console.log('[RUBIMIND] WSL GPU passthrough (/dev/dxg) detected; enabling GPU acceleration')
 }
 
 // NVIDIA EGL failures use a build-qualified, lock-owned recovery witness.
@@ -943,7 +943,7 @@ const nvidiaEglRecovery = createNvidiaEglRecovery({
   remoteDisplayReason: REMOTE_DISPLAY_REASON,
   primary: isPrimaryInstance,
   log: message => {
-    console.warn(`[hermes] ${message}`)
+    console.warn(`[RUBIMIND] ${message}`)
     void app.whenReady().then(() => {
       rememberLog(message)
       flushDesktopLogBufferSync()
@@ -960,7 +960,7 @@ const NVIDIA_EGL_FALLBACK = nvidiaEglRecovery.decision
 
 if (NVIDIA_EGL_FALLBACK.enable) {
   app.commandLine.appendSwitch('use-angle', 'swiftshader')
-  console.log(`[hermes] NVIDIA EGL fallback enabled (${NVIDIA_EGL_FALLBACK.reason}); routing ANGLE through SwiftShader`)
+  console.log(`[RUBIMIND] NVIDIA EGL fallback enabled (${NVIDIA_EGL_FALLBACK.reason}); routing ANGLE through SwiftShader`)
 }
 
 // #124843: on Mesa/Wayland the Chromium GPU child can fail init
@@ -1004,7 +1004,7 @@ if (process.platform === 'linux') {
     app.disableHardwareAcceleration()
     app.commandLine.appendSwitch('disable-gpu-compositing')
     console.log(
-      `[hermes] Linux GPU software fallback enabled (${linuxGpuDecision.reason}); disabling GPU ` +
+      `[RUBIMIND] Linux GPU software fallback enabled (${linuxGpuDecision.reason}); disabling GPU ` +
         'hardware acceleration after a GPU-child init failure (#124843). HERMES_DESKTOP_DISABLE_GPU=0 to opt out.'
     )
   }
@@ -1018,12 +1018,12 @@ if (process.platform === 'linux') {
 const PASSWORD_STORE = resolveLinuxPasswordStore()
 
 if (PASSWORD_STORE.warning) {
-  console.warn(`[hermes] ${PASSWORD_STORE.warning}`)
+  console.warn(`[RUBIMIND] ${PASSWORD_STORE.warning}`)
 }
 
 if (PASSWORD_STORE.store) {
   app.commandLine.appendSwitch('password-store', PASSWORD_STORE.store)
-  console.log(`[hermes] using password-store backend: ${PASSWORD_STORE.store}`)
+  console.log(`[RUBIMIND] using password-store backend: ${PASSWORD_STORE.store}`)
 }
 
 // Windows sandbox / GPU breakpoint crash recovery (#38216).
@@ -1068,9 +1068,9 @@ if (IS_WINDOWS || process.platform === 'linux') {
     const acl = grantAllApplicationPackagesAcl(exeDir, { execFileSync })
 
     if (acl.ok) {
-      console.log(`[hermes] granted ALL APPLICATION PACKAGES RX on ${exeDir} (#38216)`)
+      console.log(`[RUBIMIND] granted ALL APPLICATION PACKAGES RX on ${exeDir} (#38216)`)
     } else if (acl.error && acl.error !== 'missing-target-or-exec') {
-      console.warn(`[hermes] AppContainer ACL grant failed on ${exeDir}: ${acl.error}`)
+      console.warn(`[RUBIMIND] AppContainer ACL grant failed on ${exeDir}: ${acl.error}`)
     }
   }
 
@@ -1092,7 +1092,7 @@ if (IS_WINDOWS || process.platform === 'linux') {
     app.commandLine.appendSwitch('no-sandbox')
     process.env.ELECTRON_DISABLE_SANDBOX = '1'
     console.log(
-      `[hermes] sandbox fallback enabled (${sandboxDecision.reason}); launching with --no-sandbox (#38216, #121954)`
+      `[RUBIMIND] sandbox fallback enabled (${sandboxDecision.reason}); launching with --no-sandbox (#38216, #121954)`
     )
   }
 
@@ -1128,14 +1128,14 @@ if (IS_WINDOWS || process.platform === 'linux') {
     }
 
     console.warn(
-      `[hermes] GPU child died with the sandbox signature (exit=${details?.exitCode}); relaunching once with --no-sandbox (#38216)`
+      `[RUBIMIND] GPU child died with the sandbox signature (exit=${details?.exitCode}); relaunching once with --no-sandbox (#38216)`
     )
 
     try {
       relaunchApp(relauncher, { args: buildNoSandboxRelaunchArgs(process.argv.slice(1)) })
       void exitAfterBackendShutdown(0)
     } catch (error) {
-      console.error(`[hermes] --no-sandbox relaunch failed: ${error?.message || error}`)
+      console.error(`[RUBIMIND] --no-sandbox relaunch failed: ${error?.message || error}`)
     }
   }
 
@@ -1180,14 +1180,14 @@ if (IS_WINDOWS || process.platform === 'linux') {
       }
 
       console.warn(
-        `[hermes] Linux GPU child died with the sandbox signature (exit=${details?.exitCode}); relaunching once with --no-sandbox (#121954)`
+        `[RUBIMIND] Linux GPU child died with the sandbox signature (exit=${details?.exitCode}); relaunching once with --no-sandbox (#121954)`
       )
 
       try {
         relaunchApp(relauncher, { args: buildNoSandboxRelaunchArgs(process.argv.slice(1)) })
         void exitAfterBackendShutdown(0)
       } catch (error) {
-        console.error(`[hermes] --no-sandbox relaunch failed: ${error?.message || error}`)
+        console.error(`[RUBIMIND] --no-sandbox relaunch failed: ${error?.message || error}`)
       }
 
       return
@@ -1207,14 +1207,14 @@ if (IS_WINDOWS || process.platform === 'linux') {
       }
 
       console.warn(
-        `[hermes] Linux GPU child gone (reason=${details?.reason}); relaunching once with --disable-gpu (#124843)`
+        `[RUBIMIND] Linux GPU child gone (reason=${details?.reason}); relaunching once with --disable-gpu (#124843)`
       )
 
       try {
         relaunchApp(relauncher, { args: buildDisableGpuRelaunchArgs(process.argv.slice(1)) })
         void exitAfterBackendShutdown(0)
       } catch (error) {
-        console.error(`[hermes] --disable-gpu relaunch failed: ${error?.message || error}`)
+        console.error(`[RUBIMIND] --disable-gpu relaunch failed: ${error?.message || error}`)
       }
     }
   })
@@ -1247,13 +1247,13 @@ const SOURCE_REPO_ROOT = path.resolve(APP_ROOT, '../..')
 // Runtime identity comes only from the baked artifact stamp. Dev runs have none.
 if (INSTALL_STAMP) {
   console.log(
-    `[hermes] install stamp: ${INSTALL_STAMP.commit ? INSTALL_STAMP.commit.slice(0, 12) : 'no-commit'}${INSTALL_STAMP.branch ? ` (${INSTALL_STAMP.branch})` : ''}${INSTALL_STAMP.dirty ? ' [DIRTY]' : ''} from ${INSTALL_STAMP.source || 'unknown'}`
+    `[RUBIMIND] install stamp: ${INSTALL_STAMP.commit ? INSTALL_STAMP.commit.slice(0, 12) : 'no-commit'}${INSTALL_STAMP.branch ? ` (${INSTALL_STAMP.branch})` : ''}${INSTALL_STAMP.dirty ? ' [DIRTY]' : ''} from ${INSTALL_STAMP.source || 'unknown'}`
   )
 } else if (IS_PACKAGED) {
   // Dev builds without a stamp are normal; packaged builds without one
   // mean the bootstrap won't know what to clone. Surface clearly.
   console.error(
-    '[hermes] WARNING: no install-stamp.json found in packaged build. First-launch bootstrap will not have a pinned ref to install.'
+    '[RUBIMIND] WARNING: no install-stamp.json found in packaged build. First-launch bootstrap will not have a pinned ref to install.'
   )
 }
 
@@ -5783,7 +5783,7 @@ async function watchPreviewFile(owner, rawUrl) {
     },
     onPollChange: emit,
     onTrip: ({ events, windowMs }) =>
-      console.warn(`[hermes] fs.watch storm on ${watchDir} (${events} events within ${windowMs}ms); polling instead`)
+      console.warn(`[RUBIMIND] fs.watch storm on ${watchDir} (${events} events within ${windowMs}ms); polling instead`)
   })
 
   previewWatchers.set(id, {
@@ -5874,7 +5874,7 @@ function watchDirectory(owner, rawDir) {
     snapshot: () => fs.readdirSync(watchDir).sort().join('\0'),
     onPollChange: emit,
     onTrip: ({ events, windowMs }) =>
-      console.warn(`[hermes] fs.watch storm on ${watchDir} (${events} events within ${windowMs}ms); polling instead`)
+      console.warn(`[RUBIMIND] fs.watch storm on ${watchDir} (${events} events within ${windowMs}ms); polling instead`)
   })
 
   previewWatchers.set(id, {
@@ -12650,7 +12650,7 @@ function startHudGameOverlayFeed(win: BrowserWindow) {
 
     if (!reported) {
       reported = true
-      console.warn(`[hermes] HUD cannot enumerate windows: ${windows.reason}`)
+      console.warn(`[RUBIMIND] HUD cannot enumerate windows: ${windows.reason}`)
     }
 
     return null
@@ -13344,7 +13344,7 @@ function createWindow() {
               }
 
               console.warn(
-                '[hermes] Linux: no GPU child after window reveal — GPU init is retrying silently; software fallback engaged for the next launch (#124843)'
+                '[RUBIMIND] Linux: no GPU child after window reveal — GPU init is retrying silently; software fallback engaged for the next launch (#124843)'
               )
             }
           }
@@ -17330,7 +17330,7 @@ if (!isPrimaryInstance) {
       writeActiveDesktopProfile(name)
     })
   } catch (error) {
-    console.error('[hermes] failed to persist --profile launch override:', error)
+    console.error('[RUBIMIND] failed to persist --profile launch override:', error)
   }
 
   app.on('second-instance', (_event, argv) => {
