@@ -1240,14 +1240,21 @@ export function mergeMultiSourceRoster(
  *  `hermes` profile on the same source holds that handle (`claimDefaultHandles`). */
 export function botHandle(name: string, bot?: Partial<RosterRow> | null): string {
   const cleanName = (name || '').trim().toLowerCase()
+  if (cleanName === 'default' || cleanName === 'hermes') {
+    return 'rubimind'
+  }
   if (bot?.handle && bot.handle !== name && !(bot.hermesHandleTaken && (bot.handle === 'rubimind' || bot.handle === 'hermes'))) {
-    if (cleanName === 'default' && bot.handle === 'hermes') {
+    if ((cleanName === 'default' || cleanName === 'hermes') && (bot.handle === 'hermes' || bot.handle === 'rubimind')) {
       return 'rubimind'
     }
-    return bot.handle
+    return bot.handle === 'hermes' ? 'rubimind' : bot.handle
   }
 
-  return cleanName === 'default' && !bot?.hermesHandleTaken ? 'rubimind' : name
+  return (cleanName === 'default' || cleanName === 'hermes') && !bot?.hermesHandleTaken
+    ? 'rubimind'
+    : cleanName === 'hermes'
+      ? 'rubimind'
+      : name
 }
 
 /** The row's own `handle` as a mention form, lowercased. A stale 'hermes'

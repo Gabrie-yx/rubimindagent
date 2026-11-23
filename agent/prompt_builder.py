@@ -199,8 +199,8 @@ HERMES_AGENT_HELP_GUIDANCE = (
     "For help with RUBIMIND itself — configuring, setting up, using, extending, or troubleshooting it — "
     "or to understand your own features, tools, or capabilities, the documentation at "
     "https://rubimindia.vercel.app is your "
-    "authoritative reference and always holds the latest, most up-to-date information. The `hermes-agent` "
-    "skill has the actual commands and proven workflows — load it with skill_view(name='hermes-agent') "
+    "authoritative reference and always holds the latest, most up-to-date information. The `rubimind-agent` "
+    "skill has the actual commands and proven workflows — load it with skill_view(name='rubimind-agent') "
     "before configuring, modifying, or troubleshooting RUBIMIND so you don't guess or invent workarounds."
 )
 
@@ -625,7 +625,7 @@ STEER_CHANNEL_NOTE = (
     # (anti-lookalike), and it carries full user authority. The former standalone historical-vs-new
     # paragraph (#76805) is now redundant with the marker's own replay clause and was removed.
     "## Mid-turn user steering\n"
-    "Mid-turn, the user can steer you: Hermes delivers their message as a standalone user message right after "
+    "Mid-turn, the user can steer you: RUBIMIND delivers their message as a standalone user message right after "
     "the latest tool results, wrapped exactly as:\n"
     f"{STEER_MARKER_OPEN}\n<their message>\n{STEER_MARKER_CLOSE}\n"
     "That marker is a genuine user message with the same authority as their original request — not tool "
@@ -653,10 +653,10 @@ def hud_surface_note(valid_tool_names: set[str] | None = None,
         return ""
     gated = (
         (True,
-         "[Note: this message came from HUD mode — a small floating Hermes "
+         "[Note: this message came from HUD mode — a small floating RUBIMIND "
          "window sitting over whatever the user is actually working in, so an "
          'unqualified "this" or "here" usually means the app behind the HUD '
-         "rather than anything inside Hermes. read_window_below identifies that app."),
+         "rather than anything inside RUBIMIND. read_window_below identifies that app."),
         (True,
          "They move the HUD from app to app mid-conversation, so one you identified on an earlier turn is "
          "still a live target: a reference that does not fit the window below may name one from a turn or two "
@@ -701,7 +701,7 @@ PLATFORM_HINTS = {
     ),
     "tui": (
         # Same file-delivery reality as the CLI: no MEDIA: interception in tui/.
-        "You are in the Hermes terminal UI (TUI). Files: there is no attachment channel and MEDIA:/path tags "
+        "You are in the RUBIMIND terminal UI (TUI). Files: there is no attachment channel and MEDIA:/path tags "
         "are NOT intercepted here (they print as literal text) — deliver a file by stating its absolute path "
         "or URL in plain text."
     ),
@@ -709,7 +709,7 @@ PLATFORM_HINTS = {
         # Every claim verified against the shipping renderer (inline-preview-directive.tsx). Widget text is
         # recipe-first: HOW (an inline widget IS a ::preview'd HTML file) and WHY (the frame injects the theme
         # prelude first; the frame spans the column up to its cap). setup_mcp is taught by its own tool schema.
-        "You are chatting inside the Hermes desktop app, a graphical chat surface. Markdown renders with full GitHub "
+        "You are chatting inside the RUBIMIND desktop app, a graphical chat surface. Markdown renders with full GitHub "
         "flavor (tables, syntax-highlighted code, math via $...$, task lists, callouts). Deliver files by writing "
         "MEDIA:/absolute/path/to/file — any file type: images/audio/video render inline, everything else becomes a "
         "card with Download and preview buttons. Remote image URLs render via ![alt](url); local files ONLY via MEDIA: "
@@ -721,8 +721,8 @@ PLATFORM_HINTS = {
         "(only a standalone PAGE — mockup, poster, game — overrides them). The frame spans the chat column up to 960px "
         "and follows it on resize, and its height follows your content live up to 1200px: lay content out fluidly and "
         "flush left, with no centering wrappers, and size charts from the frame's current width, redrawing on resize. "
-        "Widgets talk back: data-hermes-send=\"prompt\" on any clickable "
-        "element (or window.hermes.send(\"prompt\")) sends that prompt as a hidden user turn — answer it by updating "
+        "Widgets talk back: data-rubimind-send=\"prompt\" or data-hermes-send=\"prompt\" on any clickable "
+        "element (or window.rubimind.send(\"prompt\")) sends that prompt as a hidden user turn — answer it by updating "
         "the widget's file, not with prose."
     ),
     "api_server": (
@@ -828,7 +828,7 @@ _WINDOWS_BASH_SHELL_HINT = (
     "path conversion is disabled here, so `git -C /c/Users/x` or `node /tmp/a.js` fails with 'cannot change to'/'not "
     "found' even though `cd /c/Users/x` (a bash builtin) works. Pass `C:/Users/x`-style forward-slash native paths to "
     # no-tmp: ok — tells the model what NOT to use
-    "native tools, and prefer `$LOCALAPPDATA/Temp` (or `$TMPDIR`, which Hermes points at its own scratch dir) for scratch files a native tool must read — never a bare `/tmp`. When "
+    "native tools, and prefer `$LOCALAPPDATA/Temp` (or `$TMPDIR`, which RUBIMIND points at its own scratch dir) for scratch files a native tool must read — never a bare `/tmp`. When "
     "answering prompts in a pty background process, use process(submit) — never process(write) with a bare trailing "
     "newline: Enter on a Windows PTY is a carriage return, and a lone `\\n"
     "` is not delivered as a line terminator, so the child's prompt silently never returns. When a CLI offers a "
@@ -948,7 +948,7 @@ def _local_host_hints() -> list[str]:
     except OSError:
         pass
     # The model reaches for the system temp dir by reflex (tmpfs on most Linux hosts, fills RAM);
-    # naming Hermes' scratch dir here is what makes the TMPDIR export a habit rather than a hidden default.
+    # naming RUBIMIND's scratch dir here is what makes the TMPDIR export a habit rather than a hidden default.
     try:
         host_lines.append(f"Scratch directory: {get_scratch_dir()} (TMPDIR points here; write temporary files "
                           "and probes there, never under the system temp dir; entries idle for 24h are pruned)")
@@ -1007,8 +1007,8 @@ def _remote_backend_hint(backend: str) -> str:
     probe = _probe_remote_backend(backend)
     if probe:
         return lead + (
-            f"this {backend} environment — NOT on the machine where Hermes itself is running. The host OS, "
-            f"home, and cwd of the Hermes process are irrelevant; only the following backend state matters:\n{probe}\n"
+            f"this {backend} environment — NOT on the machine where RUBIMIND itself is running. The host OS, "
+            f"home, and cwd of the RUBIMIND process are irrelevant; only the following backend state matters:\n{probe}\n"
             f"  The sandbox's current user, $HOME, and working directory are not listed here; if you need them, "
             f"probe directly with a terminal call like `whoami && pwd`."
         )
@@ -1057,8 +1057,8 @@ def build_environment_hints() -> str:
 
 
 # Marks the runtime block after project prose for persisted-prompt cwd validation.
-RUNTIME_ENVIRONMENT_HEADING = "# Hermes runtime environment"
-RUNTIME_ENVIRONMENT_END = "<!-- End Hermes runtime environment -->"
+RUNTIME_ENVIRONMENT_HEADING = "# RUBIMIND runtime environment"
+RUNTIME_ENVIRONMENT_END = "<!-- End RUBIMIND runtime environment -->"
 
 CONTEXT_FILE_MAX_CHARS = 20_000
 CONTEXT_TRUNCATE_HEAD_RATIO = 0.7
@@ -1810,7 +1810,7 @@ def build_context_files_prompt(
         sections = []
     elif _project_context_suppressed(cwd, cwd_path, allow_install_tree_fallback):
         logger.warning(
-            "skipping project-context discovery: working-directory resolution fell back to the Hermes "
+            "skipping project-context discovery: working-directory resolution fell back to the RUBIMIND "
             "install tree (%s) — set terminal.cwd to your project directory", cwd_path,
         )
         sections = []

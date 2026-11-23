@@ -118,7 +118,7 @@ def _normalize_roster_row(row: Any) -> Optional[dict]:
     if not isinstance(row, dict):
         return None
     profile = str(row.get("profile") or "").strip()
-    handle = str(row.get("handle") or "").strip().lstrip("@") or ("hermes" if profile == "default" else profile)
+    handle = str(row.get("handle") or "").strip().lstrip("@") or ("rubimind" if profile == "default" else profile)
     connection_id = str(row.get("connection_id") or "").strip()
     if not profile or not connection_id or not all(_HANDLE_RE.match(v) for v in (handle, profile, connection_id)):
         return None

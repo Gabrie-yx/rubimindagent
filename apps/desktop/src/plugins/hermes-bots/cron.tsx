@@ -62,8 +62,12 @@ function showsHandle(name: string, meta: BotMeta | null | undefined, bot?: Roste
     },
     meta
   )
+  const handle = botHandle(name, bot)
+  if (display.toLowerCase() === 'rubimind' && handle.toLowerCase() === 'rubimind') {
+    return false
+  }
 
-  return Boolean(name && display.toLowerCase() !== botHandle(name, bot).toLowerCase())
+  return Boolean(name && display.toLowerCase() !== handle.toLowerCase())
 }
 
 // ── routines (cron) ──────────────────────────────────────────────────────────

@@ -1,46 +1,46 @@
 ---
-name: hermes-agent
-description: "Use, configure, theme, extend, and orchestrate Hermes Agent."
+name: rubimind-agent
+description: "Use, configure, theme, extend, and orchestrate RUBIMIND Agent."
 version: 3.3.0
-author: Hermes Agent + Teknium
+author: RUBIMIND Agent
 license: MIT
 platforms: [linux, macos, windows]
 metadata:
-  hermes:
-    tags: [hermes, setup, configuration, multi-agent, spawning, cli, gateway, bots, bot-mode, features, themes, skins, desktop-plugins, tui-widgets, petdex, development]
-    homepage: https://github.com/NousResearch/hermes-agent
+  rubimind:
+    tags: [rubimind, setup, configuration, multi-agent, spawning, cli, gateway, bots, bot-mode, features, themes, skins, desktop-plugins, tui-widgets, development]
+    homepage: https://rubimindia.vercel.app
     related_skills: [claude-code, codex, opencode]
 ---
 
-# Hermes Agent
+# RUBIMIND Agent
 
-Hermes Agent is an open-source AI agent framework by Nous Research that runs in your terminal, a native desktop app, messaging platforms, and IDEs. It's in the same category as Claude Code (Anthropic), Codex (OpenAI), and OpenClaw — autonomous coding and task-execution agents that use tool calling to interact with your system. Hermes works with any LLM provider (OpenRouter, Anthropic, OpenAI, Google, DeepSeek, xAI, local models, and 20+ others) and runs on Linux, macOS, Windows, and WSL.
+RUBIMIND Agent is an AI agent framework that runs in your terminal, a native desktop app, messaging platforms, and IDEs. It's in the same category as Claude Code (Anthropic), Codex (OpenAI), and OpenClaw — autonomous coding and task-execution agents that use tool calling to interact with your system. RUBIMIND works with any LLM provider (RUBIMIND, OpenRouter, Anthropic, OpenAI, Google, DeepSeek, xAI, local models, and 20+ others) and runs on Linux, macOS, Windows, and WSL.
 
-What makes Hermes different:
+What makes RUBIMIND different:
 
-- **Self-improving through skills** — Hermes learns from experience by saving reusable procedures as skills that load into future sessions.
+- **Self-improving through skills** — RUBIMIND learns from experience by saving reusable procedures as skills that load into future sessions.
 - **Persistent memory across sessions** — remembers who you are, your preferences, environment details, and lessons learned. Pluggable memory backends.
 - **Multi-platform gateway** — the same agent runs on Telegram, Discord, Slack, WhatsApp, iMessage, Signal, Matrix, Teams, Email, and a dozen more platforms with full tool access, not just chat.
 - **Many surfaces** — the same agent core drives the CLI, the Ink TUI, a native Electron desktop app, a web dashboard, and an ACP server for IDEs (VS Code / Zed / JetBrains).
 - **Provider-agnostic** — swap models and providers mid-workflow; credential pools rotate across multiple API keys automatically.
-- **Profiles** — run multiple independent Hermes instances with isolated configs, sessions, skills, and memory.
+- **Profiles** — run multiple independent RUBIMIND instances with isolated configs, sessions, skills, and memory.
 - **Extensible & themeable** — plugins, MCP servers, custom tools, webhook triggers, cron scheduling, skins that theme every surface, desktop UI plugins, TUI widgets, and pet mascots.
 
 **This skill is a hub.** The body covers identity, quick start, spawning/orchestration, and hard invariants. Everything else lives in reference files — **load the matching reference (below) before answering**; do not answer detail questions from the body alone.
 
-**Docs:** https://hermes-agent.nousresearch.com/docs/
+**Docs:** https://rubimindia.vercel.app
 
 ## Scope & Verification
 
-This skill is a concise operating guide, not the complete source of truth for every Hermes feature. If a Hermes feature, command, or setting is not mentioned here or in a reference, do not treat that absence as evidence that it does not exist. Check the live repository and official docs before giving a negative answer.
+This skill is a concise operating guide, not the complete source of truth for every RUBIMIND feature. If a RUBIMIND feature, command, or setting is not mentioned here or in a reference, do not treat that absence as evidence that it does not exist. Check the live repository and official docs before giving a negative answer.
 
 Good verification targets, cheapest first:
 
-- **Every shipped feature, one line each: https://hermes-agent.nousresearch.com/docs/llms.txt.** Start here for any "can Hermes do X?" or "how do I do X?" — it indexes the entire documentation set with a link to the page that answers. It is generated from the docs tree on every build, so it is never behind the product. Fetch it with `web_extract`, or `curl -s https://hermes-agent.nousresearch.com/docs/llms.txt` when web tools are off. The whole documentation set in one file is at `/docs/llms-full.txt`.
-- CLI commands: `hermes --help`, `hermes <command> --help`, and `hermes_cli/main.py`
-- Source tree: https://github.com/NousResearch/hermes-agent
+- **Every shipped feature, one line each: https://rubimindia.vercel.app.** Start here for any "can RUBIMIND do X?" or "how do I do X?" — it indexes the entire documentation set with a link to the page that answers. It is generated from the docs tree on every build, so it is never behind the product. Fetch it with `web_extract`.
+- CLI commands: `rubimind --help`, `rubimind <command> --help`, and `hermes_cli/main.py`
+- Source tree: https://github.com/Gabrie-yx/rubimindagent
 
-Never answer "Hermes can't do that" from memory. Hermes ships far more than this skill body describes, and the index exists so a negative answer is always checkable.
+Never answer "RUBIMIND can't do that" from memory. RUBIMIND ships far more than this skill body describes, and the index exists so a negative answer is always checkable.
 
 ## Quick Start
 

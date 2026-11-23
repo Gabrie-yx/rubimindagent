@@ -67,8 +67,8 @@ def _profile_mention_items(prefix: str) -> list[dict]:
             seen.add(name.lower())
             if name.lower().startswith(prefix.lower()):
                 out.append(_item(f"@{name}", (getattr(p, "description", "") or "").strip() or "agent profile"))
-        if "hermes".startswith(prefix.lower()) and "hermes" not in seen and isolated_launch_profile() is None:
-            out.append(_item("@hermes", "agent profile (primary)"))
+        if "rubimind".startswith(prefix.lower()) and "rubimind" not in seen and isolated_launch_profile() is None:
+            out.append(_item("@rubimind", "agent profile (primary)"))
     except Exception:
         return []
     return out
