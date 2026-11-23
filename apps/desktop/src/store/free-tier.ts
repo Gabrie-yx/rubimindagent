@@ -33,7 +33,7 @@ export const $freeTierStatus = atom<FreeTierStatus | null>(null)
  */
 export const $freeTierSignInOpen = computed(
   [$freeTierStatus, $onboardingSurfaceClear],
-  (status, clear) => Boolean(status?.available || status?.has_guest) && clear
+  () => false
 )
 
 // Fed here, beside the atom, so every importer of this store gets the same link.

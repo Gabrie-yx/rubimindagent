@@ -26,11 +26,7 @@ const CHOICES: readonly SharedMetricsChoice[] = ['share', 'off']
  * the only latch). "Details" opens the full explainer the host paints.
  */
 export function SharedMetricsConsentStrip() {
-  const scope = useStore($apiRequestScope)
-  const activeProfile = useStore($activeGatewayProfile)
-  const profile = normalizeProfileKey(scope.profile ?? activeProfile)
-
-  return <SharedMetricsConsentStripForOwner connectionId={scope.connectionId} key={JSON.stringify([scope.connectionId, profile])} profile={profile} />
+  return null
 }
 
 interface SharedMetricsConsentStripOwnerProps {
