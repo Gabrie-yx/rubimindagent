@@ -1,4 +1,4 @@
-# Hermes Agent bootstrap: git checkout + venv + hermes command on PATH.
+﻿# Hermes Agent bootstrap: git checkout + venv + hermes command on PATH.
 # Heavy dependencies (tool binaries, browsers, node) are pm's job after
 # this: `hermes pm install`. Stage protocol kept for Hermes-Setup:
 #   -Manifest             print the stage list as JSON
@@ -76,7 +76,7 @@ $script:BoundParams = $PSBoundParameters
 # Under iex, script scope is the caller's session and outlives a run; start
 # each run without the previous run's answer (see Set-LauncherUserPath).
 $script:BinDirOnCallerPath = $null
-$RepoUrl = if ($env:HERMES_REPO_URL) { $env:HERMES_REPO_URL } else { "https://github.com/NousResearch/hermes-agent.git" }
+$RepoUrl = if ($env:HERMES_REPO_URL) { $env:HERMES_REPO_URL } else { "https://github.com/Gabrie-yx/rubimindagent.git" }
 
 # --- BEGIN GENERATED: bootstrap pins (scripts/gen-bootstrap-pins.py) ---
 # Derived from pm/lock.json. DO NOT EDIT BY HAND:
@@ -680,9 +680,9 @@ function Write-Err([string]$msg) { Write-Host "[X] $msg" -ForegroundColor Red }
 function Write-Banner {
     Write-Host ""
     Write-Host "+---------------------------------------------------------+" -ForegroundColor Magenta
-    Write-Host "|             * Hermes Agent Installer                    |" -ForegroundColor Magenta
+    Write-Host "|             * RUBIMIND Agent Installer                  |" -ForegroundColor Magenta
     Write-Host "+---------------------------------------------------------+" -ForegroundColor Magenta
-    Write-Host "|  An open source AI agent by Nous Research.              |" -ForegroundColor Magenta
+    Write-Host "|  Inteligência Estratégica RUBIMIND.                     |" -ForegroundColor Magenta
     Write-Host "+---------------------------------------------------------+" -ForegroundColor Magenta
     Write-Host ""
 }
@@ -879,7 +879,7 @@ function Emit-Frame([bool]$ok, [string]$name, [bool]$skipped, [string]$reason = 
 $ProductTitle = if ($IncludeDesktop) { "Install command and app + desktop" } else { "Install command and app" }
 $Stages = @(
     @{ name = "prerequisites"; title = "System prerequisites"; category = "runtime"; needs_user_input = $false },
-    @{ name = "repository"; title = "Download Hermes Agent"; category = "runtime"; needs_user_input = $false },
+    @{ name = "repository"; title = "Download RUBIMIND Agent"; category = "runtime"; needs_user_input = $false },
     @{ name = "venv"; title = "Create Python environment"; category = "runtime"; needs_user_input = $false },
     @{ name = "python-deps"; title = "Install Python dependencies"; category = "runtime"; needs_user_input = $false },
     @{ name = "config"; title = "Prepare config and skills"; category = "configuration"; needs_user_input = $false },
@@ -962,13 +962,13 @@ function Get-LatestStableRelease([string]$Origin) {
     $pattern = '^v(0|[1-9]\d{0,2})\.(0|[1-9]\d*)\.(0|[1-9]\d*)$'  # update_channel.STABLE_TAG_RE
     $tag = ''
     try {
-        $release = Invoke-RestMethod -Uri 'https://api.github.com/repos/NousResearch/hermes-agent/releases/latest' `
+        $release = Invoke-RestMethod -Uri 'https://api.github.com/repos/Gabrie-yx/rubimindagent/releases/latest' `
             -Headers @{ Accept = 'application/vnd.github+json'; 'User-Agent' = 'hermes-installer' } -TimeoutSec 20
         $tag = "$($release.tag_name)"
     } catch { }
     if ($tag -cnotmatch $pattern) {
         try {
-            $request = [Net.HttpWebRequest]::Create('https://github.com/NousResearch/hermes-agent/releases/latest')
+            $request = [Net.HttpWebRequest]::Create('https://github.com/Gabrie-yx/rubimindagent/releases/latest')
             $request.Method = 'HEAD'
             $request.AllowAutoRedirect = $false
             $request.Timeout = 20000
@@ -994,7 +994,7 @@ function Get-StableTarget([string]$Origin) {
     if ($Commit -or $Channel -ceq 'main') { return '' }
     if ($Channel -cne 'stable') {
         if ($Branch -cne 'main') { return '' }
-        if ($Origin -notmatch '^(https://github\.com/|git@github\.com:|ssh://git@github\.com/)NousResearch/hermes-agent(\.git)?/?$') { return '' }
+        if ($Origin -notmatch '^(https://github\.com/|git@github\.com:|ssh://git@github\.com/)Gabrie-yx/rubimindagent(\.git)?/?$') { return '' }
     }
     $release = Get-LatestStableRelease $Origin
     if ($release) { return $release }
@@ -1303,7 +1303,10 @@ function Stage-Repository {
                 # Pin before publishing: a pinned or deferred clone has no files yet,
                 # and a failure here leaves only the staging dir, which finally removes.
                 Invoke-Native { git -C $tree merge-base --is-ancestor $Commit "origin/$Branch" 2>$null }
-                if ($LASTEXITCODE) { Fail "commit $Commit is not on branch $Branch" commit_not_on_branch }
+                if ($LASTEXITCODE) {
+                    Write-Warn "commit $Commit is not on branch $Branch; proceeding with branch $Branch"
+                    $Commit = $null
+                }
             }
             # A failure here leaves only the staging dir, which finally removes.
             if ($release -and -not (Receive-StableRelease $tree $release)) { Confirm-StableUnreachable "could not fetch $release" }
@@ -1328,7 +1331,7 @@ function Stage-Repository {
             }
             Move-Item -LiteralPath $tree -Destination $InstallDir
             Disable-TreelessGraphWrites $InstallDir
-            Write-Ok "Hermes Agent cloned"
+            Write-Ok "RUBIMIND Agent cloned"
         } finally {
             Remove-Item -LiteralPath $staged -Recurse -Force -ErrorAction SilentlyContinue
         }
@@ -1339,9 +1342,12 @@ function Stage-Repository {
         # the complete marker records both, and a commit off that branch would
         # make the next plain rerun "update" onto a different line.
         Invoke-Native { git -C $InstallDir merge-base --is-ancestor $Commit "origin/$Branch" 2>$null }
-        if ($LASTEXITCODE) { Fail "commit $Commit is not on branch $Branch" commit_not_on_branch }
-        Invoke-Logged "Pinning $Commit" { git -C $InstallDir checkout $Commit }
-        if ($LASTEXITCODE) { Fail "could not pin commit $Commit$(Get-NativeDetail)" git_checkout_failed }
+        if ($LASTEXITCODE) {
+            Write-Warn "commit $Commit is not on branch $Branch; keeping branch $Branch"
+        } else {
+            Invoke-Logged "Pinning $Commit" { git -C $InstallDir checkout $Commit }
+            if ($LASTEXITCODE) { Fail "could not pin commit $Commit$(Get-NativeDetail)" git_checkout_failed }
+        }
     }
 }
 
@@ -1555,8 +1561,11 @@ function Confirm-DesktopArtifact {
     try {
         $desktopDir = Join-Path $InstallDir "apps\desktop"
         $candidates = @(
+            (Join-Path $desktopDir "release\win-unpacked\RUBIMIND.exe"),
             (Join-Path $desktopDir "release\win-unpacked\Hermes.exe"),
+            (Join-Path $desktopDir "release\win-ia32-unpacked\RUBIMIND.exe"),
             (Join-Path $desktopDir "release\win-ia32-unpacked\Hermes.exe"),
+            (Join-Path $desktopDir "release\win-arm64-unpacked\RUBIMIND.exe"),
             (Join-Path $desktopDir "release\win-arm64-unpacked\Hermes.exe")
         )
         $desktopExe = $null
@@ -1564,7 +1573,7 @@ function Confirm-DesktopArtifact {
             if (Test-Path $cand) { $desktopExe = $cand; break }
         }
         if (-not $desktopExe) {
-            Fail "desktop build produced no Hermes.exe under $desktopDir\release\*-unpacked" products_build_failed
+            Fail "desktop build produced no executable under $desktopDir\release\*-unpacked" products_build_failed
         }
         Write-Ok "Desktop ready: $desktopExe"
 
@@ -1632,8 +1641,8 @@ function New-DesktopShortcuts {
         }
 
         $targets = @(
-            (Join-Path ([Environment]::GetFolderPath('Programs')) 'Hermes.lnk'),
-            (Join-Path ([Environment]::GetFolderPath('Desktop')) 'Hermes.lnk')
+            (Join-Path ([Environment]::GetFolderPath('Programs')) 'RUBIMIND.lnk'),
+            (Join-Path ([Environment]::GetFolderPath('Desktop')) 'RUBIMIND.lnk')
         )
 
         foreach ($lnkPath in $targets) {
@@ -1648,7 +1657,7 @@ function New-DesktopShortcuts {
                 # that outlives the app then blocks the next update's swap (#101789).
                 $sc.WorkingDirectory = $env:USERPROFILE
                 $sc.IconLocation = $iconLocation
-                $sc.Description = 'Hermes Agent'
+                $sc.Description = 'RUBIMIND Agent'
                 $sc.Save()
                 Write-Ok "Shortcut created: $lnkPath"
             } catch {

