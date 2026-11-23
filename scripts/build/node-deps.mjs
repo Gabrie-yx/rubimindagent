@@ -184,8 +184,7 @@ function moveTree(from, to) {
     renameSync(from, to)
   } catch (error) {
     if (error.code !== 'EXDEV' && error.code !== 'EPERM' && !(error.code === 'EBUSY' && process.platform !== 'win32')) throw error
-    console.warn(
-ode-deps: cannot move  aside (); falling back)
+    console.warn(`node-deps: cannot move ${from} aside (${error.code}); falling back`)
     try {
       for (const entry of readdirSync(from)) {
         try {
@@ -195,22 +194,6 @@ ode-deps: cannot move  aside (); falling back)
     } catch (_) {}
   }
 }
-// pnpm's record of the trees it just wrote (node_modules/.pnpm/lock.yaml) must be the source
-// lockfile's for the selected projects and every other project it installed: no other run's.
-// An optional dependency this host skips is left out of the record, never changed.
-function installedLockMatches(lockText, installedLock, selected) {
-  if (!existsSync(installedLock)) return false
-  const wanted = lockImporters(lockText)
-  const installed = lockImporters(readFileSync(installedLock, 'utf8'))
-  const same = (a = {}, b = {}) => JSON.stringify(a) === JSON.stringify(b)
-  return ['.', ...selected].every(project => project in installed)
-    && Object.entries(installed).every(([project, fields]) => project in wanted
-      && same(fields.dependencies, wanted[project].dependencies)
-      && same(fields.devDependencies, wanted[project].devDependencies)
-      && Object.entries(fields.optionalDependencies ?? {})
-        .every(([name, entry]) => same(entry, wanted[project].optionalDependencies?.[name])))
-}
-
 // What this run installs and the key its receipt carries, read once the run holds the lock: an
 // update that changed them while this run waited is installed, not judged against older files.
 function dependencyInputs({ source, workspaces, env, nativeToolchain, electron }) {
