@@ -14014,6 +14014,14 @@ ipcMain.handle('hermes:bootstrap:reset', async () => {
   // reset connection state so the next startHermes() call restarts the
   // full backend flow (including a fresh runBootstrap pass).
   rememberLog('[bootstrap] reset requested by renderer; clearing latched failure')
+  if (bootstrapAbortController) {
+    try {
+      bootstrapAbortController.abort()
+    } catch {
+      void 0
+    }
+    bootstrapAbortController = null
+  }
   await teardownPrimaryBackendAndWait()
   bootstrapFailure = null
   backendStartFailure = null

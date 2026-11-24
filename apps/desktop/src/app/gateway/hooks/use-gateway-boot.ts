@@ -25,7 +25,7 @@ import {
 import { resolveDesktopGatewayWsUrl } from '@/lib/gateway-ws-url'
 import { hostHas } from '@/lib/host-capabilities'
 import { browserLaunchProfile } from '@/lib/platform'
-import { BACKEND_BOOT_WAIT_TIMEOUT_MS, RECONNECT_ATTEMPT_TIMEOUT_MS, withTimeout } from '@/lib/with-timeout'
+import { BACKEND_BOOT_WAIT_TIMEOUT_MS, RECONNECT_ATTEMPT_TIMEOUT_MS, TimeoutError, withTimeout } from '@/lib/with-timeout'
 import {
   $desktopBoot,
   applyDesktopBootProgress,
@@ -1534,14 +1534,73 @@ export function useGatewayBoot({
         // backend directly — ensureBackend spawns/reuses it from the pool.
         // Full peers use the source/profile Electron pinned before loading.
         // Bounded like the reconnect path (#93454): a wedged main-process
-        // round-trip must not hang "Starting Hermes…" forever. Initial boot
-        // rides out a full backend cold spawn, so it gets the shared 45s
-        // backend-boot budget, not the 20s reconnect budget.
-        const conn = await withTimeout(
-          getWindowBackend(true),
-          BACKEND_BOOT_WAIT_TIMEOUT_MS,
-          'Timed out connecting to RUBIMIND backend'
-        )
+        // round-trip must not hang "Starting RUBIMIND…" forever. Initial boot
+        // rides out a full backend cold spawn, so it gets the shared
+        // backend-boot budget, but never fires while first-run setup or the
+        // installer bootstrap is actively running (which can take 5-10 min on
+        // a fresh machine).
+        const conn = await new Promise<HermesConnection>((resolve, reject) => {
+          let settled = false
+          let timer: ReturnType<typeof setTimeout> | null = null
+
+          const cleanup = () => {
+            if (timer) {
+              clearTimeout(timer)
+              timer = null
+            }
+            offBootstrap?.()
+          }
+
+          const armTimer = () => {
+            if (timer) {
+              clearTimeout(timer)
+            }
+            timer = setTimeout(async () => {
+              if (settled) {
+                return
+              }
+              try {
+                const bootSnap = await desktop.getBootstrapState?.()
+                if (!settled && (bootSnap?.active || bootSnap?.setupChoice)) {
+                  armTimer()
+                  return
+                }
+              } catch {
+                // Fall through to timeout if state check fails
+              }
+              if (!settled) {
+                settled = true
+                cleanup()
+                reject(new TimeoutError('Timed out connecting to RUBIMIND backend'))
+              }
+            }, BACKEND_BOOT_WAIT_TIMEOUT_MS)
+          }
+
+          const offBootstrap = desktop.onBootstrapEvent?.(() => {
+            if (!settled) {
+              armTimer()
+            }
+          })
+
+          armTimer()
+
+          Promise.resolve(getWindowBackend(true)).then(
+            value => {
+              if (!settled) {
+                settled = true
+                cleanup()
+                resolve(value)
+              }
+            },
+            err => {
+              if (!settled) {
+                settled = true
+                cleanup()
+                reject(err)
+              }
+            }
+          )
+        })
 
         if (cancelled) {
           return
