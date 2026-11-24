@@ -133,7 +133,7 @@ function waitForDashboardPort(
           cleanup()
           reject(
             new Error(
-              `Timed out waiting for Hermes backend port announcement (${timeoutMs}ms)${deadline ? ' while an update completion was in progress' : ''}`
+              `Timed out waiting for RUBIMIND backend port announcement (${timeoutMs}ms)${deadline ? ' while an update completion was in progress' : ''}`
             )
           )
         },
@@ -181,7 +181,7 @@ function waitForDashboardPort(
 
     function onExit(code, signal) {
       cleanup()
-      reject(new Error(`Hermes backend: exited before port announcement (${signal || code})${describeOutputTail()}`))
+      reject(new Error(`RUBIMIND backend: exited before port announcement (${signal || code})${describeOutputTail()}`))
     }
 
     function onError(err) {
@@ -269,7 +269,7 @@ function waitForDashboardReadyFile(
 
     function onExit(code, signal) {
       cleanup()
-      reject(new Error(`Hermes backend: exited before port announcement (${signal || code})${describeOutputTail()}`))
+      reject(new Error(`RUBIMIND backend: exited before port announcement (${signal || code})${describeOutputTail()}`))
     }
 
     function onError(err) {
