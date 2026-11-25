@@ -26,7 +26,7 @@ interface SourceOptions {
 export async function resolveSourceInstallationBackend(
   root: string,
   args: string[],
-  options: SourceOptions & { hermesHome?: string } = {}
+  options: SourceOptions & { hermesHome?: string; log?: (msg: string) => void } = {}
 ): Promise<SourceBackend | null> {
   if (!existsSync(path.join(root, 'hermes_cli', 'main.py'))) {
     return null
@@ -36,37 +36,53 @@ export async function resolveSourceInstallationBackend(
   const launcher: string | null = resolveInstallationLauncher(root, isWindows, options.hermesHome)
 
   if (!launcher) {
+    options.log?.(`[bootstrap] resolveSourceInstallationBackend: no launcher found for ${root}`)
     return null
   }
 
-  const shell: boolean = isWindows && /\.(cmd|bat)$/i.test(launcher)
-  const command: string = shell ? `"${launcher}"` : launcher
+  const candidates: string[] = [launcher]
+  if (isWindows && /\.exe$/i.test(launcher)) {
+    const cmdFallback = launcher.replace(/\.exe$/i, '.cmd')
+    if (existsSync(cmdFallback)) {
+      candidates.push(cmdFallback)
+    }
+  }
+
   const env: NodeJS.ProcessEnv = buildDesktopBackendEnv({ currentEnv: options.env ?? process.env })
 
-  try {
-    await execProbe(command, ['--version'], {
-      cwd: root,
-      env: { ...process.env, ...options.env, ...env },
-      shell,
-      stdio: 'ignore',
-      timeout: PROBE_TIMEOUT_MS,
-      windowsHide: true
-    })
-  } catch {
-    return null
+  for (const candidate of candidates) {
+    const shell: boolean = isWindows && /\.(cmd|bat)$/i.test(candidate)
+    const command: string = shell ? `"${candidate}"` : candidate
+
+    try {
+      await execProbe(command, ['--version'], {
+        cwd: root,
+        env: { ...process.env, ...options.env, ...env },
+        shell,
+        stdio: 'ignore',
+        timeout: PROBE_TIMEOUT_MS,
+        windowsHide: true
+      })
+
+      return {
+        kind: 'command',
+        label: `RUBIMIND at ${root}`,
+        command,
+        args: [...args],
+        env,
+        root,
+        bootstrap: false,
+        shell,
+        local: 'installed'
+      }
+    } catch (err: any) {
+      options.log?.(
+        `[bootstrap] resolveSourceInstallationBackend: probe failed for ${candidate} (${err?.message || err})`
+      )
+    }
   }
 
-  return {
-    kind: 'command',
-    label: `Hermes at ${root}`,
-    command,
-    args: [...args],
-    env,
-    root,
-    bootstrap: false,
-    shell,
-    local: 'installed'
-  }
+  return null
 }
 
 /** Developer overrides retain their interpreter, even outside the checkout. */

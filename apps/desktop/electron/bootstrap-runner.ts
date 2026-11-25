@@ -224,90 +224,114 @@ function cachedScriptPath(hermesHome, cacheKey) {
   return path.join(bootstrapCacheDir(hermesHome), `install-${cacheKey}.${process.platform === 'win32' ? 'ps1' : 'sh'}`)
 }
 
-function downloadInstallScript(ref, destPath) {
+function downloadInstallScriptOnce(url, scriptName, destPath, timeoutMs = 30_000) {
+  return new Promise((resolve, reject) => {
+    fs.mkdirSync(path.dirname(destPath), { recursive: true })
+    const tmpPath = destPath + '.tmp'
+    const out = fs.createWriteStream(tmpPath)
+    let settled = false
+
+    const fail = err => {
+      if (settled) {
+        return
+      }
+      settled = true
+      try {
+        out.close()
+      } catch {
+        void 0
+      }
+      try {
+        fs.unlinkSync(tmpPath)
+      } catch {
+        void 0
+      }
+      reject(err)
+    }
+
+    const req = https
+      .get(url, res => {
+        if (res.statusCode === 301 || res.statusCode === 302) {
+          res.resume()
+          if (!res.headers.location) {
+            fail(new Error(`Failed to download ${scriptName}: HTTP ${res.statusCode} with no Location header`))
+            return
+          }
+          try {
+            out.close()
+          } catch {
+            void 0
+          }
+          try {
+            fs.unlinkSync(tmpPath)
+          } catch {
+            void 0
+          }
+          if (!settled) {
+            settled = true
+            downloadInstallScriptOnce(res.headers.location, scriptName, destPath, timeoutMs).then(resolve, reject)
+          }
+          return
+        }
+
+        if (res.statusCode !== 200) {
+          res.resume()
+          fail(new Error(`Failed to download ${scriptName}: HTTP ${res.statusCode} from ${url}`))
+          return
+        }
+
+        res.on('error', fail)
+        res.pipe(out)
+        out.on('finish', () => {
+          out.close(() => {
+            if (settled) {
+              return
+            }
+            try {
+              fs.renameSync(tmpPath, destPath)
+              settled = true
+              resolve(destPath)
+            } catch (err) {
+              fail(err)
+            }
+          })
+        })
+        out.on('error', fail)
+      })
+      .on('error', fail)
+
+    req.setTimeout(timeoutMs, () => {
+      req.destroy(new Error(`Timed out downloading ${scriptName} after ${timeoutMs}ms`))
+    })
+  })
+}
+
+async function downloadInstallScript(ref, destPath, { maxAttempts = 3, emit }: any = {}) {
   // Fetch from GitHub raw at the install ref: the packaged SHA for a fresh
   // install, the branch for an existing checkout or a non-git fallback stamp
   // (never the all-zero placeholder, which is not a real GitHub commit).
   const scriptName = installScriptName()
   const url = `https://raw.githubusercontent.com/Gabrie-yx/rubimindagent/${ref}/scripts/${scriptName}`
+  let lastError: any = null
 
-  return new Promise((resolve, reject) => {
-    fs.mkdirSync(path.dirname(destPath), { recursive: true })
-    const tmpPath = destPath + '.tmp'
-    const out = fs.createWriteStream(tmpPath)
-    https
-      .get(url, res => {
-        if (res.statusCode === 301 || res.statusCode === 302) {
-          // GitHub raw shouldn't redirect for a SHA URL, but follow once
-          // defensively.
-          out.close()
-          fs.unlinkSync(tmpPath)
-          https
-            .get(res.headers.location, res2 => {
-              if (res2.statusCode !== 200) {
-                reject(
-                  new Error(
-                    `Failed to download ${scriptName}: HTTP ${res2.statusCode} from redirect ${res.headers.location}`
-                  )
-                )
+  for (let attempt = 1; attempt <= maxAttempts; attempt++) {
+    try {
+      return await downloadInstallScriptOnce(url, scriptName, destPath)
+    } catch (err: any) {
+      lastError = err
+      if (attempt < maxAttempts) {
+        const delayMs = attempt * 1500
+        emit &&
+          emit({
+            type: 'log',
+            line: `[bootstrap] download attempt ${attempt}/${maxAttempts} failed (${err?.message || err}); retrying in ${delayMs}ms…`
+          })
+        await new Promise(r => setTimeout(r, delayMs))
+      }
+    }
+  }
 
-                return
-              }
-
-              const out2 = fs.createWriteStream(tmpPath)
-              res2.pipe(out2)
-              out2.on('finish', () => {
-                out2.close()
-                fs.renameSync(tmpPath, destPath)
-                resolve(destPath)
-              })
-              out2.on('error', reject)
-            })
-            .on('error', reject)
-
-          return
-        }
-
-        if (res.statusCode !== 200) {
-          out.close()
-
-          try {
-            fs.unlinkSync(tmpPath)
-          } catch {
-            void 0
-          }
-
-          reject(new Error(`Failed to download ${scriptName}: HTTP ${res.statusCode} from ${url}`))
-
-          return
-        }
-
-        res.pipe(out)
-        out.on('finish', () => {
-          out.close()
-          fs.renameSync(tmpPath, destPath)
-          resolve(destPath)
-        })
-        out.on('error', err => {
-          try {
-            fs.unlinkSync(tmpPath)
-          } catch {
-            void 0
-          }
-
-          reject(err)
-        })
-      })
-      .on('error', err => {
-        try {
-          fs.unlinkSync(tmpPath)
-        } catch {
-          void 0
-        }
-
-        reject(err)
-      })
-  })
+  throw lastError
 }
 
 async function resolveInstallScript({
@@ -354,8 +378,26 @@ async function resolveInstallScript({
       (installRef.pinned ? '' : ' (unpinned branch)')
   })
 
-  await _download(installRef.ref, cached)
-  emit({ type: 'log', line: `[bootstrap] saved to ${cached}` })
+  try {
+    await _download(installRef.ref, cached, { emit })
+    emit({ type: 'log', line: `[bootstrap] saved to ${cached}` })
+  } catch (downloadErr: any) {
+    let hasCached = false
+    try {
+      hasCached = fs.existsSync(cached) && fs.statSync(cached).size > 0
+    } catch {
+      hasCached = false
+    }
+
+    if (!hasCached) {
+      throw downloadErr
+    }
+
+    emit({
+      type: 'log',
+      line: `[bootstrap] download failed (${downloadErr?.message || downloadErr}); falling back to cached script at ${cached}`
+    })
+  }
 
   return { path: cached, source: 'download', commit: resolvedCommit, kind: installScriptKind() }
 }

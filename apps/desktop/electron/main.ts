@@ -4965,9 +4965,27 @@ async function resolveHermesBackend(backendArgs: string[], progress?: typeof adv
   //    active runtime is usable, launch it directly; only fall through to
   //    bootstrap when the runtime itself is unusable.
   //    HERMES_DESKTOP_IGNORE_EXISTING=1 skips this rung (see backend-resolution).
-  const activeBackend: SourceBackend | null = await installedRuntimeGate.resolve(ACTIVE_HERMES_ROOT, () =>
-    resolveSourceInstallationBackend(ACTIVE_HERMES_ROOT, backendArgs, { hermesHome: HERMES_HOME })
-  )
+  const activeBackend: SourceBackend | null = await installedRuntimeGate.resolve(ACTIVE_HERMES_ROOT, async () => {
+    const launcherBackend = await resolveSourceInstallationBackend(ACTIVE_HERMES_ROOT, backendArgs, {
+      hermesHome: HERMES_HOME,
+      log: rememberLog
+    })
+    if (launcherBackend) {
+      return launcherBackend
+    }
+
+    if (isHermesSourceRoot(ACTIVE_HERMES_ROOT)) {
+      const fallbackPython = await findPythonForRoot(ACTIVE_HERMES_ROOT)
+      if (fallbackPython && (await canImportHermesCli(fallbackPython, { cwd: ACTIVE_HERMES_ROOT }))) {
+        rememberLog(
+          `[bootstrap] launcher probe failed for ${ACTIVE_HERMES_ROOT}, but Python runtime at ${fallbackPython} is usable; launching directly.`
+        )
+        return createSourcePythonBackend(ACTIVE_HERMES_ROOT, fallbackPython, backendArgs)
+      }
+    }
+
+    return null
+  })
 
   const activeRuntime: ActiveRuntimeState = activeRuntimeState(activeBackend)
 
@@ -5160,7 +5178,7 @@ async function ensureRuntime(
     bootstrapAbortController = null
 
     if (bootstrapResult.cancelled) {
-      const cancelledError = new Error('Hermes install was cancelled.') as any
+      const cancelledError = new Error('RUBIMIND install was cancelled.') as any
       cancelledError.isBootstrapFailure = true
       cancelledError.bootstrapCancelled = true
       bootstrapFailure = cancelledError
@@ -5186,10 +5204,32 @@ async function ensureRuntime(
     rememberLog('[bootstrap] bootstrap complete; marker written. Re-resolving backend.')
 
     // Resolve the newly published launcher after the installer completes.
-    return ensureRuntime(
-      await installedRuntimeGate.afterInstall(() => resolveHermesBackend(backend.args)),
-      assertStillOwned
-    )
+    const postInstallBackend = await installedRuntimeGate.afterInstall(() => resolveHermesBackend(backend.args))
+
+    if (postInstallBackend.kind === 'bootstrap-needed') {
+      // Never recurse back into runBootstrap() in an infinite loop after a
+      // successful install. Fall back directly to the checkout's Python.
+      const fallbackPython = await findPythonForRoot(backend.activeRoot)
+      const fallbackBackend = fallbackPython
+        ? createSourcePythonBackend(backend.activeRoot, fallbackPython, backend.args)
+        : null
+
+      if (fallbackBackend) {
+        rememberLog(
+          `[bootstrap] launcher probe did not resolve after install; falling back directly to Python at ${fallbackPython}`
+        )
+        return fallbackBackend
+      }
+
+      const unresolvedError = new Error(
+        `RUBIMIND finished installing at ${backend.activeRoot}, but its launcher could not be verified. Open logs for details.`
+      ) as any
+      unresolvedError.isBootstrapFailure = true
+      bootstrapFailure = unresolvedError
+      throw unresolvedError
+    }
+
+    return ensureRuntime(postInstallBackend, assertStillOwned)
   }
 
   throw new Error(`Unexpected bootstrap backend: ${backend.kind}`)
