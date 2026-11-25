@@ -20,6 +20,7 @@ import { AlertCircle, ChevronDown, ChevronRight, Globe, iconSize, Loader2, Monit
 import { capitalize } from '@/lib/text'
 import { cn } from '@/lib/utils'
 
+import { sanitizeBootErrorText } from './boot-failure-cause'
 import { localCardPresentation } from './desktop-install-local-card'
 import { FirstRunRemoteSetup } from './remote-setup/first-run'
 
@@ -592,7 +593,7 @@ export function DesktopInstallOverlay({ enabled = true }: DesktopInstallOverlayP
   const failed = Boolean(state.error)
   // Main writes a plain lead sentence and keeps the raw installer error after
   // "Details:" (electron/bootstrap-failure-copy.ts); show them as two lines.
-  const [failureLead, failureDetail] = splitFailureDetails(state.error)
+  const [failureLead, failureDetail] = splitFailureDetails(state.error ? sanitizeBootErrorText(state.error) : state.error)
   // Count the running stage as half-done so the bar advances *during* a long
   // stage instead of sitting frozen at the last completed step while its logs
   // stream (e.g. "0 of 2" pinned at 0% for the whole first stage).
@@ -730,7 +731,7 @@ export function DesktopInstallOverlay({ enabled = true }: DesktopInstallOverlayP
             <div className="flex items-center justify-between gap-2">
               <span className="text-xs text-muted-foreground">
                 {copy.transcriptSaved}{' '}
-                <code className="font-mono text-(--ui-text-secondary)">%LOCALAPPDATA%\hermes\logs\</code>
+                <code className="font-mono text-(--ui-text-secondary)">%LOCALAPPDATA%\RUBIMIND\logs\</code>
               </span>
               <div className="flex gap-2">
                 <Button onClick={() => setState(EMPTY_STATE)} size="sm" variant="ghost">

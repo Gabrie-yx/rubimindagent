@@ -453,9 +453,9 @@ export const en: KanbanMessages = {
     blockedTitle: 'Task blocked — needs your input',
     blockLoopTitle: 'Task routed to triage — needs a decision',
     gaveUpTitle: 'Task stopped',
-    gaveUpBody: 'Hermes couldn’t finish this task. Open Kanban to see why and reassign it.',
-    crashedTitle: 'Task hit a problem — Hermes will retry it automatically',
-    timedOutTitle: 'Task took too long — Hermes will retry it automatically',
+    gaveUpBody: 'RUBIMIND couldn’t finish this task. Open Kanban to see why and reassign it.',
+    crashedTitle: 'Task hit a problem — RUBIMIND will retry it automatically',
+    timedOutTitle: 'Task took too long — RUBIMIND will retry it automatically',
     openKanban: 'Open Kanban',
     artifacts: (n: number) => `${n} artifacts`
   }
