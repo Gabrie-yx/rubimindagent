@@ -72,15 +72,20 @@ async function execProbe(
 ): Promise<void> {
   const run = () =>
     new Promise<void>((resolve, reject) => {
-      const child = spawn(command, args, options)
+      const child = spawn(command, args, { ...options, stdio: ['ignore', 'ignore', 'pipe'] })
+      let stderrTail = ''
+      child.stderr?.on('data', chunk => {
+        stderrTail = (stderrTail + String(chunk)).slice(-600)
+      })
       child.once('error', reject)
       child.once('close', (code, signal) => {
         // A timed-out probe may handle SIGTERM and exit zero; it is still a timeout.
         if (code === 0 && !child.killed) {
           resolve()
         } else {
+          const detail = stderrTail.trim() ? `: ${stderrTail.trim()}` : ''
           reject(
-            Object.assign(new Error(`Runtime probe failed: ${command} (${signal || code})`), {
+            Object.assign(new Error(`Runtime probe failed: ${command} (${signal || code})${detail}`), {
               code,
               signal,
               killed: child.killed

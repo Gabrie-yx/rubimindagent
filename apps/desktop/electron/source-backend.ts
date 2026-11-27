@@ -109,13 +109,43 @@ export function createSourcePythonBackend(
 
   return {
     kind: 'python',
-    label: `Hermes source at ${root}`,
+    label: `RUBIMIND source at ${root}`,
     command,
     args: ['-m', 'hermes_cli.main', ...args],
     // The backend runs in the user's workspace cwd, and the selected
     // interpreter need not have this checkout installed: name it explicitly.
     // (The scrubbed inherited value could point at another checkout.)
     env: { ...buildDesktopBackendEnv({ currentEnv: options.env ?? process.env }), PYTHONPATH: root },
+    root,
+    bootstrap: false,
+    shell: false,
+    local: 'installed'
+  }
+}
+
+/** Launch a PM-managed source checkout directly via its store Python (bypassing distlib .exe). */
+export function createStorePythonBackend(
+  root: string,
+  storePython: string,
+  args: string[],
+  options: SourceOptions = {}
+): SourceBackend {
+  const bootstrapCode = [
+    'import os, sys, runpy',
+    "os.environ.pop('PYTHONHOME', None)",
+    "os.environ.pop('PYTHONPATH', None)",
+    "os.environ.pop('VIRTUAL_ENV', None)",
+    `sys.path.insert(0, ${JSON.stringify(root)})`,
+    'import hermes_bootstrap',
+    "runpy.run_module('hermes_cli.main', run_name='__main__', alter_sys=True)"
+  ].join('; ')
+
+  return {
+    kind: 'python',
+    label: `RUBIMIND store Python at ${root}`,
+    command: storePython,
+    args: ['-I', '-c', bootstrapCode, ...args],
+    env: buildDesktopBackendEnv({ currentEnv: options.env ?? process.env }),
     root,
     bootstrap: false,
     shell: false,

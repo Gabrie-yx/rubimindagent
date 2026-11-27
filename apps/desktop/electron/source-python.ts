@@ -1,4 +1,4 @@
-import { statSync } from 'node:fs'
+import { readdirSync, statSync } from 'node:fs'
 import path from 'node:path'
 
 export interface SourcePythonOptions {
@@ -48,6 +48,37 @@ export function resolveSourcePython(
   for (const relative of interpreterPaths(isWindows)) {
     const candidate: string = path.join(root, relative)
 
+    if (fileExists(candidate)) {
+      return candidate
+    }
+  }
+
+  return null
+}
+
+/**
+ * Locate PM's store Python under `<hermesHome>/tools/python-*` (or `<root>/../tools/python-*`).
+ * Used as a resilient fallback when the distlib launcher executable fails its probe on Windows.
+ */
+export function findStorePythonForHome(
+  hermesHome: string,
+  isWindows: boolean = process.platform === 'win32',
+  fileExists: (candidate: string) => boolean = defaultFileExists
+): string | null {
+  const toolsDir = path.join(hermesHome, 'tools')
+  let entries: string[]
+  try {
+    entries = readdirSync(toolsDir)
+      .filter(name => name.startsWith('python-'))
+      .sort()
+      .reverse()
+  } catch {
+    return null
+  }
+
+  const rel = isWindows ? 'python.exe' : path.join('bin', 'python3')
+  for (const entry of entries) {
+    const candidate = path.join(toolsDir, entry, rel)
     if (fileExists(candidate)) {
       return candidate
     }

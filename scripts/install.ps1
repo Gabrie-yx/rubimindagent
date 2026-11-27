@@ -1,4 +1,4 @@
-﻿# Hermes Agent bootstrap: git checkout + venv + hermes command on PATH.
+# Hermes Agent bootstrap: git checkout + venv + hermes command on PATH.
 # Heavy dependencies (tool binaries, browsers, node) are pm's job after
 # this: `hermes pm install`. Stage protocol kept for Hermes-Setup:
 #   -Manifest             print the stage list as JSON

@@ -575,8 +575,8 @@ import {
 } from './session-windows'
 import { ensureLoginShellPath } from './shell-path'
 import { removeStaleSingletonLock } from './singleton-lock'
-import { createSourcePythonBackend, resolveSourceInstallationBackend, type SourceBackend } from './source-backend'
-import { resolveSourcePython } from './source-python'
+import { createSourcePythonBackend, createStorePythonBackend, resolveSourceInstallationBackend, type SourceBackend } from './source-backend'
+import { findStorePythonForHome, resolveSourcePython } from './source-python'
 import { registerSpellcheckDictionaryIpc } from './spellcheck-dictionary-ipc'
 import { resolveSshBinary, windowsSshEnv } from './ssh-binary'
 import { createBootstrapCoordinator, sshConfigFingerprint } from './ssh-bootstrap-coordinator'
@@ -4982,6 +4982,14 @@ async function resolveHermesBackend(backendArgs: string[], progress?: typeof adv
         )
         return createSourcePythonBackend(ACTIVE_HERMES_ROOT, fallbackPython, backendArgs)
       }
+
+      const storePython = findStorePythonForHome(HERMES_HOME, IS_WINDOWS, fileExists)
+      if (storePython && (await canImportHermesCli(storePython, { cwd: ACTIVE_HERMES_ROOT }))) {
+        rememberLog(
+          `[bootstrap] launcher probe failed for ${ACTIVE_HERMES_ROOT}, but PM store Python at ${storePython} is usable; launching directly.`
+        )
+        return createStorePythonBackend(ACTIVE_HERMES_ROOT, storePython, backendArgs)
+      }
     }
 
     return null
@@ -5208,7 +5216,7 @@ async function ensureRuntime(
 
     if (postInstallBackend.kind === 'bootstrap-needed') {
       // Never recurse back into runBootstrap() in an infinite loop after a
-      // successful install. Fall back directly to the checkout's Python.
+      // successful install. Fall back directly to the checkout's Python or PM store Python.
       const fallbackPython = await findPythonForRoot(backend.activeRoot)
       const fallbackBackend = fallbackPython
         ? createSourcePythonBackend(backend.activeRoot, fallbackPython, backend.args)
@@ -5219,6 +5227,14 @@ async function ensureRuntime(
           `[bootstrap] launcher probe did not resolve after install; falling back directly to Python at ${fallbackPython}`
         )
         return fallbackBackend
+      }
+
+      const storePython = findStorePythonForHome(HERMES_HOME, IS_WINDOWS, fileExists)
+      if (storePython) {
+        rememberLog(
+          `[bootstrap] launcher probe did not resolve after install; falling back directly to PM store Python at ${storePython}`
+        )
+        return createStorePythonBackend(backend.activeRoot, storePython, backend.args)
       }
 
       const unresolvedError = new Error(
